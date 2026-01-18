@@ -1,0 +1,28 @@
+[package]
+name = "flutter_embedding"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+flutter_rust_bridge = "=2.11.1"
+tokenizers = { version = "0.22.2", default-features = false, features = [
+  "onig",
+] }
+anyhow = "1.0.100"
+serde = { version = "1.0", features = ["derive"] }
+ndarray = "0.17.1"
+ort = { version = "2.0.0-rc.11", default-features = false, features = [
+  "ndarray",
+  "load-dynamic",
+  "half",
+] }
+half = { version = "2.4.1", features = ["num-traits"] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
+
+[dev-dependencies]
+dotenvy = "0.15.7"

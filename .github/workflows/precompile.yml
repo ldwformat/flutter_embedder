@@ -1,0 +1,57 @@
+name: precompile-binaries
+
+on:
+  push:
+    tags: ["v*", "dev"]
+  workflow_dispatch:
+
+jobs:
+  precompile:
+    runs-on: macOS-latest
+    env:
+      PRIVATE_KEY: ${{ secrets.CARGOKIT_PRIVATE_KEY }}
+      GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add Android targets
+        run: rustup target add aarch64-linux-android
+
+      - name: Set up Android SDK/NDK
+        uses: android-actions/setup-android@v3
+      - name: Install NDK
+        run: sdkmanager --install "ndk;26.1.10909125"
+      - name: Set NDK env
+        run: echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
+
+      - name: Set iOS/macOS targets
+        run: rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Precompile binaries
+        working-directory: cargokit/build_tool
+        run: |
+          dart run build_tool precompile-binaries -v \
+            --repository "ldwformat/flutter_embedding" \
+            --manifest-dir=../../rust \
+            --target aarch64-linux-android \
+            --target aarch64-apple-ios \
+            --target x86_64-apple-ios \
+            --target aarch64-apple-darwin \
+            --target x86_64-apple-darwin \
+            --android-sdk-location "$ANDROID_SDK_ROOT" \
+            --android-ndk-version 26.1.10909125 \
+            --android-min-sdk-version 21
+        env:
+          PRIVATE_KEY: ${{ secrets.CARGOKIT_PRIVATE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+
+      - name: Upload artifact logs (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: precompile-logs
+          path: cargokit_tool_temp/**
