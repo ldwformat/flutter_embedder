@@ -1,11 +1,11 @@
 use std::fs;
 
-use flutter_embedding::api::tokenizer::{
+use flutter_embedder::api::tokenizer::{
     add_special_tokens, decode, decode_batch, encode, encode_batch,
     load_tokenizer_from_bytes_with_special_tokens, load_tokenizer_from_file,
     load_tokenizer_from_json_with_special_tokens,
 };
-use flutter_embedding::api::utils::{cosine_distance, mean_pooling_vec, normalize};
+use flutter_embedder::api::utils::{cosine_distance, mean_pooling_vec, normalize};
 
 mod config;
 use config::{init_test_config, QWEN_TOKENIZER_PATH};

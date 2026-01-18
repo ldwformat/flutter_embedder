@@ -1,11 +1,11 @@
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_embedding/flutter_embedding.dart';
+import 'package:flutter_embedder/flutter_embedder.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() async => await initFlutterEmbedding());
+  setUpAll(() async => await initFlutterEmbedder());
 
   testWidgets('encode/decode via asset tokenizer', (tester) async {
     final data = await rootBundle.load('assets/tokenizer.json');

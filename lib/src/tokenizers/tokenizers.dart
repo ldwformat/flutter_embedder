@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_embedding/src/rust/api/tokenizer.dart' as ffi_tok;
-import 'package:flutter_embedding/src/rust/api/utils.dart' as ffi_utils;
+import 'package:flutter_embedder/src/rust/api/tokenizer.dart' as ffi_tok;
+import 'package:flutter_embedder/src/rust/api/utils.dart' as ffi_utils;
 
 /// Thin Dart wrapper around generated bindings for nicer ergonomics.
 class HfTokenizer {
@@ -71,22 +71,20 @@ class HfTokenizer {
   List<ffi_tok.EncodeOutput> encodeBatch(
     List<String> texts, {
     bool addSpecialTokens = true,
-  }) =>
-      ffi_tok.encodeBatch(
-        tokenizerId: _id,
-        texts: texts,
-        addSpecialTokens: addSpecialTokens,
-      );
+  }) => ffi_tok.encodeBatch(
+    tokenizerId: _id,
+    texts: texts,
+    addSpecialTokens: addSpecialTokens,
+  );
 
   Future<List<ffi_tok.EncodeOutput>> encodeBatchAsync(
     List<String> texts, {
     bool addSpecialTokens = true,
-  }) =>
-      ffi_tok.encodeBatchAsync(
-        tokenizerId: _id,
-        texts: texts,
-        addSpecialTokens: addSpecialTokens,
-      );
+  }) => ffi_tok.encodeBatchAsync(
+    tokenizerId: _id,
+    texts: texts,
+    addSpecialTokens: addSpecialTokens,
+  );
 
   String decode(List<int> ids, {bool skipSpecialTokens = true}) => ffi_tok
       .decode(tokenizerId: _id, ids: ids, skipSpecialTokens: skipSpecialTokens);
@@ -94,22 +92,20 @@ class HfTokenizer {
   List<String> decodeBatch(
     List<Uint32List> batchIds, {
     bool skipSpecialTokens = true,
-  }) =>
-      ffi_tok.decodeBatch(
-        tokenizerId: _id,
-        batchIds: batchIds,
-        skipSpecialTokens: skipSpecialTokens,
-      );
+  }) => ffi_tok.decodeBatch(
+    tokenizerId: _id,
+    batchIds: batchIds,
+    skipSpecialTokens: skipSpecialTokens,
+  );
 
   Future<List<String>> decodeBatchAsync(
     List<Uint32List> batchIds, {
     bool skipSpecialTokens = true,
-  }) =>
-      ffi_tok.decodeBatchAsync(
-        tokenizerId: _id,
-        batchIds: batchIds,
-        skipSpecialTokens: skipSpecialTokens,
-      );
+  }) => ffi_tok.decodeBatchAsync(
+    tokenizerId: _id,
+    batchIds: batchIds,
+    skipSpecialTokens: skipSpecialTokens,
+  );
 }
 
 // Vector utils passthroughs.

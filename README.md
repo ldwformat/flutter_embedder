@@ -1,4 +1,4 @@
-# flutter_embedding
+# flutter_embedder
 
 Flutter FFI plugin wrapping Hugging Face tokenizers and ONNX embedding runtimes via Rust + ONNX Runtime (ORT).
 
@@ -36,17 +36,17 @@ final doc = <Model>Embedder.formatDocument(text: '...');
 Add to `pubspec.yaml`:
 ```yaml
 dependencies:
-  flutter_embedding: ^0.0.1
+  flutter_embedder: ^0.0.1
 ```
 
 ## Usage
 Initialize the Rust runtime once:
 ```dart
-import 'package:flutter_embedding/flutter_embedding.dart';
+import 'package:flutter_embedder/flutter_embedder.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initFlutterEmbedding();
+  await initFlutterEmbedder();
   runApp(const MyApp());
 }
 ```
@@ -61,7 +61,7 @@ final decoded = tokenizer.decode(encoded.ids, skipSpecialTokens: true);
 Embedding example (Qwen3):
 ```dart
 // Optional: pass a custom ORT shared library path.
-await initFlutterEmbedding(name: 'flutter_embedding', path: 'libonnxruntime.so');
+await initFlutterEmbedder(name: 'flutter_embedder', path: 'libonnxruntime.so');
 
 final qwen = Qwen3Embedder.create(
   modelPath: '/path/to/qwen3-embedding.onnx',

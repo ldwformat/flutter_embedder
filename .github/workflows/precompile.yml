@@ -35,7 +35,7 @@ jobs:
         working-directory: cargokit/build_tool
         run: |
           dart run build_tool precompile-binaries -v \
-            --repository "ldwformat/flutter_embedding" \
+            --repository "ldwformat/flutter_embedder" \
             --manifest-dir=../../rust \
             --target aarch64-linux-android \
             --target aarch64-apple-ios \

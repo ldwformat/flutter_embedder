@@ -1,4 +1,4 @@
-library flutter_embedding;
+library flutter_embedder;
 
 // Public surface: high-level wrapper and runtime initializer.
 export 'src/tokenizers/tokenizers.dart'
@@ -21,8 +21,8 @@ import 'src/rust/api/ort.dart' show initOrt;
 
 bool _inited = false;
 
-Future<void> initFlutterEmbedding({
-  String name = "FlutterEmbedding",
+Future<void> initFlutterEmbedder({
+  String name = "FlutterEmbedder",
   String path = "libonnxruntime.so",
 }) async {
   if (_inited) return;

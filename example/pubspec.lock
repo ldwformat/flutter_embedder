@@ -115,7 +115,7 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_embedding:
+  flutter_embedder:
     dependency: "direct main"
     description:
       path: ".."

@@ -3,12 +3,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_embedding/flutter_embedding.dart';
+import 'package:flutter_embedder/flutter_embedder.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initFlutterEmbedding();
+  await initFlutterEmbedder();
   runApp(const MyApp());
 }
 
@@ -22,9 +22,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final List<String> _log = [];
   final TextEditingController _qwenModelController = TextEditingController();
-  final TextEditingController _qwenTokenizerController = TextEditingController();
+  final TextEditingController _qwenTokenizerController =
+      TextEditingController();
   final TextEditingController _gemmaModelController = TextEditingController();
-  final TextEditingController _gemmaTokenizerController = TextEditingController();
+  final TextEditingController _gemmaTokenizerController =
+      TextEditingController();
 
   HfTokenizer? _tokenizer;
   Qwen3Embedder? _qwenEmbedder;
@@ -73,7 +75,9 @@ class _MyAppState extends State<MyApp> {
 
     _appendLog('Documents dir: ${docs.path}');
     _appendLog('Tokenizer asset copied to: $tokenizerPath');
-    _appendLog('Place ONNX models at the paths above before running embeddings.');
+    _appendLog(
+      'Place ONNX models at the paths above before running embeddings.',
+    );
     if (!mounted) {
       return;
     }
@@ -102,14 +106,8 @@ class _MyAppState extends State<MyApp> {
       _appendLog('Tokenizer not ready yet.');
       return;
     }
-    final encoding = _tokenizer!.encode(
-      'hello worlds',
-      addSpecialTokens: true,
-    );
-    final decoded = _tokenizer!.decode(
-      encoding.ids,
-      skipSpecialTokens: true,
-    );
+    final encoding = _tokenizer!.encode('hello worlds', addSpecialTokens: true);
+    final decoded = _tokenizer!.decode(encoding.ids, skipSpecialTokens: true);
     _appendLog('Tokenizer IDs: ${encoding.ids}');
     _appendLog('Tokenizer tokens: ${encoding.tokens}');
     _appendLog('Tokenizer decoded: $decoded');
@@ -187,9 +185,7 @@ class _MyAppState extends State<MyApp> {
         ...embedder.embed(
           texts: [
             query,
-            ...docs.map(
-              (text) => GemmaEmbedder.formatDocument(text: text),
-            ),
+            ...docs.map((text) => GemmaEmbedder.formatDocument(text: text)),
           ],
         ),
       ];
@@ -236,15 +232,11 @@ class _MyAppState extends State<MyApp> {
       const Text('Qwen3 paths'),
       TextField(
         controller: _qwenModelController,
-        decoration: const InputDecoration(
-          labelText: 'Qwen3 model path',
-        ),
+        decoration: const InputDecoration(labelText: 'Qwen3 model path'),
       ),
       TextField(
         controller: _qwenTokenizerController,
-        decoration: const InputDecoration(
-          labelText: 'Qwen3 tokenizer path',
-        ),
+        decoration: const InputDecoration(labelText: 'Qwen3 tokenizer path'),
       ),
       const SizedBox(height: 8),
       ElevatedButton(
@@ -255,15 +247,11 @@ class _MyAppState extends State<MyApp> {
       const Text('Gemma paths'),
       TextField(
         controller: _gemmaModelController,
-        decoration: const InputDecoration(
-          labelText: 'Gemma model path',
-        ),
+        decoration: const InputDecoration(labelText: 'Gemma model path'),
       ),
       TextField(
         controller: _gemmaTokenizerController,
-        decoration: const InputDecoration(
-          labelText: 'Gemma tokenizer path',
-        ),
+        decoration: const InputDecoration(labelText: 'Gemma tokenizer path'),
       ),
       const SizedBox(height: 8),
       ElevatedButton(
@@ -274,9 +262,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Embedding (Android)'),
-        ),
+        appBar: AppBar(title: const Text('Flutter Embedding (Android)')),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -284,11 +270,7 @@ class _MyAppState extends State<MyApp> {
             children: [
               if (!Platform.isAndroid)
                 const Text('This example only supports Android.'),
-              Expanded(
-                child: ListView(
-                  children: controls,
-                ),
-              ),
+              Expanded(child: ListView(children: controls)),
               const SizedBox(height: 12),
               const Text('Logs'),
               const SizedBox(height: 8),

@@ -1,5 +1,5 @@
 precompiled_binaries:
   # Release tag is `precompiled_<crate_hash>`; downloader appends `<crate_hash>/<file>`
   # to this prefix. Keep the trailing underscore.
-  url_prefix: https://github.com/ldwformat/flutter_embedding/releases/download/precompiled_
+  url_prefix: https://github.com/ldwformat/flutter_embedder/releases/download/precompiled_
   public_key: f24b3342facb5589320939f27b0b1336e8cbe58ee952baa053936352694e0b7e

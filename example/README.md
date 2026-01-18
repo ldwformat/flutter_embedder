@@ -1,6 +1,6 @@
 # flutter_embedding_example
 
-Demonstrates how to use the flutter_embedding plugin.
+Demonstrates how to use the flutter_embedder plugin.
 
 ## Getting Started
 

@@ -1,5 +1,5 @@
-use flutter_embedding::api::embeddings::gemma::GemmaEmbedder;
-use flutter_embedding::api::ort::init_ort;
+use flutter_embedder::api::embeddings::gemma::GemmaEmbedder;
+use flutter_embedder::api::ort::init_ort;
 use ndarray::{array, Array, Array2};
 
 mod config;
