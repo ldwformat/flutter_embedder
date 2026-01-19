@@ -2,11 +2,11 @@ use anyhow::{anyhow, Result};
 use flutter_rust_bridge::frb;
 use ndarray::{ArrayD, IxDyn};
 use ort::{
-    session::{builder::GraphOptimizationLevel, Session},
     tensor::TensorElementType,
     value::{DynTensor, Tensor, ValueType},
 };
 
+use crate::api::ort::{build_session_from_file_with_init, OrtInitOptions};
 use crate::api::utils::normalize;
 
 const QWEN3_TASK: &str =
@@ -21,13 +21,17 @@ pub struct Qwen3Embedder {
 #[frb(sync)]
 impl Qwen3Embedder {
     pub fn create(model_path: String, tokenizer_path: String) -> Result<Self> {
+        Self::create_with_options(model_path, tokenizer_path, None)
+    }
+
+    pub fn create_with_options(
+        model_path: String,
+        tokenizer_path: String,
+        ort_options: Option<OrtInitOptions>,
+    ) -> Result<Self> {
         let tokenizer =
             tokenizers::Tokenizer::from_file(tokenizer_path).map_err(|e| anyhow::anyhow!(e))?;
-
-        let session = Session::builder()?
-            .with_optimization_level(GraphOptimizationLevel::Level3)?
-            .with_intra_threads(1)?
-            .commit_from_file(model_path)?;
+        let session = build_session_from_file_with_init(model_path, ort_options)?;
 
         Ok(Self { tokenizer, session })
     }

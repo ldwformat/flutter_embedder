@@ -4,7 +4,7 @@ Flutter FFI plugin wrapping Hugging Face tokenizers and ONNX embedding runtimes 
 
 ## Features
 - Tokenizers: load from JSON/bytes/file, optional special tokens, encode/decode single & batch with structured outputs.
-- Embeddings: Jina V3, Qwen3, and Gemma ONNX models.
+- Embeddings: Jina V3, Qwen3, Gemma, BGE, and MiniLM ONNX models.
 - Vector utils: `normalize`, `mean_pooling`, `cosine_distance`.
 
 ## Embedding models
@@ -31,12 +31,14 @@ final doc = <Model>Embedder.formatDocument(text: '...');
 | Jina V3 | https://huggingface.co/jinaai/jina-embeddings-v3 | Requires `taskId` input |
 | Qwen3 | https://huggingface.co/onnx-community/Qwen3-Embedding-0.6B-ONNX | Use `formatQuery` / `formatDocument` helpers |
 | Gemma | https://huggingface.co/onnx-community/embeddinggemma-300m-ONNX | Use `formatQuery` / `formatDocument` helpers |
+| BGE | https://huggingface.co/onnx-community/bge-small-en-v1.5-ONNX | CLS pooling + query prefix helper |
+| MiniLM | https://huggingface.co/onnx-community/all-MiniLM-L6-v2-ONNX | Mean pooling + normalize |
 
 ## Installation
 Add to `pubspec.yaml`:
 ```yaml
 dependencies:
-  flutter_embedder: ^0.0.1
+  flutter_embedder: ^0.1.2
 ```
 
 ## Usage
@@ -79,6 +81,25 @@ final gemma = GemmaEmbedder.create(
 );
 final query = GemmaEmbedder.formatQuery(query: 'Which planet is known as the Red Planet?');
 final embedding = gemma.embed(texts: [query]).first;
+```
+
+Embedding example (BGE):
+```dart
+final bge = BgeEmbedder.create(
+  modelPath: '/path/to/bge-small-en.onnx',
+  tokenizerPath: '/path/to/bge-tokenizer.json',
+);
+final query = BgeEmbedder.formatQuery(query: 'What is a panda?');
+final embedding = bge.embed(texts: [query]).first;
+```
+
+Embedding example (MiniLM):
+```dart
+final minilm = MiniLmEmbedder.create(
+  modelPath: '/path/to/all-minilm-l6-v2.onnx',
+  tokenizerPath: '/path/to/minilm-tokenizer.json',
+);
+final embedding = minilm.embed(texts: ['This is an example sentence']).first;
 ```
 
 ## Android setup

@@ -1,21 +1,21 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use flutter_rust_bridge::frb;
 use ort::value::Tensor;
 
 use crate::api::ort::{build_session_from_file_with_init, OrtInitOptions};
+use crate::api::utils::normalize;
 
-pub const PREFIX_QUERY: &str = "task: search result | query: ";
-pub const PREFIX_DOCUMENT: &str = "title: none | text: ";
-const HIDDEN_DIM: usize = 768;
+pub const PREFIX_QUERY: &str = "Represent this sentence for searching relevant passages: ";
+pub const PREFIX_DOCUMENT: &str = "";
 
 #[frb(opaque)]
-pub struct GemmaEmbedder {
+pub struct BgeEmbedder {
     tokenizer: tokenizers::Tokenizer,
     session: ort::session::Session,
 }
 
 #[frb(sync)]
-impl GemmaEmbedder {
+impl BgeEmbedder {
     pub fn create(model_path: String, tokenizer_path: String) -> Result<Self> {
         Self::create_with_options(model_path, tokenizer_path, None)
     }
@@ -59,7 +59,6 @@ impl GemmaEmbedder {
 
         let mut input_ids_batch = Vec::with_capacity(batch * max_len);
         let mut mask_batch = Vec::with_capacity(batch * max_len);
-
         for encoding in encodings {
             let ids = encoding.get_ids();
             let mask = encoding.get_attention_mask();
@@ -67,7 +66,6 @@ impl GemmaEmbedder {
 
             let mut ids_i64: Vec<i64> = ids.iter().map(|&x| x as i64).collect();
             let mut mask_i64: Vec<i64> = mask.iter().map(|&x| x as i64).collect();
-
             ids_i64.extend(std::iter::repeat(pad_id).take(pad_len));
             mask_i64.extend(std::iter::repeat(0).take(pad_len));
 
@@ -75,28 +73,61 @@ impl GemmaEmbedder {
             mask_batch.extend_from_slice(&mask_i64);
         }
 
-        let inputs = ort::inputs! {
+        let mut inputs = ort::inputs! {
             "input_ids" => Tensor::from_array(([batch, max_len], input_ids_batch))?,
             "attention_mask" => Tensor::from_array(([batch, max_len], mask_batch))?,
         };
+        if self
+            .session
+            .inputs()
+            .iter()
+            .any(|input| input.name() == "token_type_ids")
+        {
+            inputs.push((
+                "token_type_ids".into(),
+                Tensor::from_array(([batch, max_len], vec![0i64; batch * max_len]))?.into(),
+            ));
+        }
+
         let outputs = self.session.run(inputs)?;
-        let (out_shape, extracted_data) = outputs
-            .get("sentence_embedding")
-            .ok_or(anyhow::anyhow!("Missing sentence_embedding"))?
-            .try_extract_tensor::<f32>()?;
-        let out_batch = usize::try_from(out_shape[0])?;
+        let (shape, data) = pick_embedding_tensor(&outputs)?;
+        if shape.len() == 2 {
+            let out_batch = shape[0];
+            let hidden = shape[1];
+            if out_batch != batch {
+                return Err(anyhow!("Batch size mismatch in outputs"));
+            }
+            let mut results = Vec::with_capacity(batch);
+            for i in 0..batch {
+                let start = i * hidden;
+                let end = start + hidden;
+                let slice = data
+                    .get(start..end)
+                    .ok_or(anyhow!("Invalid output slice"))?;
+                results.push(normalize(slice));
+            }
+            return Ok(results);
+        }
+        if shape.len() != 3 {
+            return Err(anyhow!("Unexpected output shape: {shape:?}"));
+        }
+
+        let out_batch = shape[0];
+        let seq_len = shape[1];
+        let hidden_dim = shape[2];
         if out_batch != batch {
-            return Err(anyhow::anyhow!("Batch size mismatch in outputs"));
+            return Err(anyhow!("Batch size mismatch in outputs"));
         }
 
         let mut results = Vec::with_capacity(batch);
         for i in 0..batch {
-            let start = i * HIDDEN_DIM;
-            let end = start + HIDDEN_DIM;
-            let slice = extracted_data
+            let cls_index = 0usize.min(seq_len.saturating_sub(1));
+            let start = (i * seq_len + cls_index) * hidden_dim;
+            let end = start + hidden_dim;
+            let slice = data
                 .get(start..end)
-                .ok_or(anyhow::anyhow!("Invalid output slice"))?;
-            results.push(slice.to_vec());
+                .ok_or(anyhow!("Invalid CLS slice"))?;
+            results.push(normalize(slice));
         }
 
         Ok(results)
@@ -107,6 +138,34 @@ impl GemmaEmbedder {
     }
 
     pub fn format_document(text: String) -> String {
-        format!("{PREFIX_DOCUMENT}{text}")
+        if PREFIX_DOCUMENT.is_empty() {
+            text
+        } else {
+            format!("{PREFIX_DOCUMENT}{text}")
+        }
+    }
+}
+
+fn pick_embedding_tensor(
+    outputs: &ort::session::SessionOutputs<'_>,
+) -> Result<(Vec<usize>, Vec<f32>)> {
+    for key in [
+        "sentence_embedding",
+        "pooled_output",
+        "pooler_output",
+        "embedding",
+    ] {
+        if let Some(t) = outputs.get(key) {
+            let (shape, data) = t.try_extract_tensor::<f32>()?;
+            let shape_usize = shape.iter().map(|d| *d as usize).collect();
+            return Ok((shape_usize, data.to_vec()));
+        }
+    }
+    if let Some(t) = outputs.get("last_hidden_state") {
+        let (shape, data) = t.try_extract_tensor::<f32>()?;
+        let shape_usize = shape.iter().map(|d| *d as usize).collect();
+        Ok((shape_usize, data.to_vec()))
+    } else {
+        Err(anyhow!("No embedding tensor found in outputs"))
     }
 }

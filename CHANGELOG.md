@@ -1,3 +1,10 @@
+## 0.1.2
+
+* Added BGE (bge-small-en-v1.5) and MiniLM (all-MiniLM-L6-v2) embedding support.
+* Added ORT init/session options for custom thread and optimization settings.
+* Improved mean pooling using ndarray masking + reduction.
+* Added Rust smoke tests for BGE and MiniLM models.
+
 ## 0.0.1
 
 * Initial release with tokenizers (load/encode/decode, batch APIs, special tokens).

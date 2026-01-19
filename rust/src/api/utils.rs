@@ -1,5 +1,6 @@
 pub use ndarray::Array2;
 pub use ndarray::Array2 as FrbArray2Alias;
+use ndarray::{Array1, Axis};
 
 #[flutter_rust_bridge::frb(sync)]
 pub fn cosine_distance(a: Vec<f32>, b: Vec<f32>) -> Result<f32, String> {
@@ -28,25 +29,28 @@ pub fn cosine_distance(a: Vec<f32>, b: Vec<f32>) -> Result<f32, String> {
 // Internal helper for embedding pipelines that already operate on ndarray.
 pub fn mean_pooling_ndarray(embeddings: &Array2<f32>, attention_mask: &[u32]) -> Vec<f32> {
     let (seq_len, hidden_size) = embeddings.dim();
-    let mut pooled = vec![0.0f32; hidden_size];
-    let mut count = 0.0f32;
-
-    for i in 0..seq_len {
-        if attention_mask[i] != 0 {
-            for j in 0..hidden_size {
-                pooled[j] += embeddings[[i, j]]
-            }
-            count += 1.0;
-        }
+    if seq_len == 0 || hidden_size == 0 {
+        return Vec::new();
     }
 
-    if count > 0.0 {
-        for val in &mut pooled {
-            *val /= count;
-        }
+    let mut mask: Vec<f32> = attention_mask
+        .iter()
+        .take(seq_len)
+        .map(|&v| if v == 0 { 0.0 } else { 1.0 })
+        .collect();
+    if mask.len() < seq_len {
+        mask.extend(std::iter::repeat(0.0).take(seq_len - mask.len()));
     }
-    println!("mean_pooling_ndarray count: {}", count);
-    pooled
+
+    let mask = Array1::from(mask);
+    let count = mask.sum();
+    if count <= 0.0 {
+        return vec![0.0; hidden_size];
+    }
+
+    let weighted = embeddings * &mask.insert_axis(Axis(1));
+    let pooled = weighted.sum_axis(Axis(0)) / count;
+    pooled.to_vec()
 }
 
 #[flutter_rust_bridge::frb(sync)]

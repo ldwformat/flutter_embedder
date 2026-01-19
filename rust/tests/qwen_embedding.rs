@@ -42,6 +42,7 @@ fn qwen_embedding() {
     .unwrap();
 
     let sims = queries.dot(&docs.t());
+    println!("Similarities:\n{sims}");
     let target_sims = array![0.7646, 0.1414, 0.1355, 0.6000];
-    assert!(sims.flatten().dot(&target_sims.t()) > 0.95); // cosine similarity
+    assert!(sims.flatten().dot(&target_sims.t()) > 0.98); // cosine similarity
 }
