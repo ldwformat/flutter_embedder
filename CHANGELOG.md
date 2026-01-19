@@ -1,3 +1,8 @@
+## 0.1.3
+
+* Added Dart-side ModelManager helpers, cache defaults, and embedder factories.
+* Example app includes Hugging Face download + BGE quick demo.
+
 ## 0.1.2
 
 * Added BGE (bge-small-en-v1.5) and MiniLM (all-MiniLM-L6-v2) embedding support.

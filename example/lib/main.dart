@@ -31,12 +31,15 @@ class _MyAppState extends State<MyApp> {
   HfTokenizer? _tokenizer;
   Qwen3Embedder? _qwenEmbedder;
   GemmaEmbedder? _gemmaEmbedder;
+  BgeEmbedder? _bgeEmbedder;
   ModelManager? _modelManager;
   final TextEditingController _hfModelController = TextEditingController();
   String? _qwenModelPath;
   String? _qwenTokenizerPath;
   String? _gemmaModelPath;
   String? _gemmaTokenizerPath;
+  String? _bgeModelPath;
+  String? _bgeTokenizerPath;
   String _docsDir = '';
   bool _loading = false;
 
@@ -231,6 +234,39 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> _runBgeDemo() async {
+    setState(() => _loading = true);
+    try {
+      _bgeEmbedder ??= await BgeEmbedderFactory.fromHuggingFace();
+      final embedder = _bgeEmbedder!;
+      final docs = [
+        'Hello world.',
+        'The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.',
+        'I love pandas so much!',
+      ];
+      final docInputs =
+          docs.map((text) => BgeEmbedder.formatDocument(text: text)).toList();
+      final docEmbeddings = embedder.embed(texts: docInputs);
+      final query = BgeEmbedder.formatQuery(query: 'What is a panda?');
+      final queryEmbedding = embedder.embed(texts: [query]).first;
+      final scores = docEmbeddings
+          .map((e) => _cosine(queryEmbedding, e))
+          .toList(growable: false);
+      final bestIdx = scores
+          .asMap()
+          .entries
+          .reduce((a, b) => a.value > b.value ? a : b)
+          .key;
+      _appendLog('BGE embeddings: ${docEmbeddings.length} items');
+      _appendLog('BGE dim: ${docEmbeddings.first.length}');
+      _appendLog('BGE best doc: ${docs[bestIdx]}');
+    } catch (err) {
+      _appendLog('BGE embedding failed: $err');
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
   bool _requireFile(String path, String label) {
     if (path.isEmpty) {
       _appendLog('$label path is empty.');
@@ -269,6 +305,12 @@ class _MyAppState extends State<MyApp> {
       ElevatedButton(
         onPressed: _loading ? null : _downloadHfModel,
         child: const Text('Download model'),
+      ),
+      const SizedBox(height: 16),
+      const Text('BGE quick demo (download + embed)'),
+      ElevatedButton(
+        onPressed: _loading ? null : _runBgeDemo,
+        child: const Text('Run BGE demo'),
       ),
       const SizedBox(height: 16),
       const Text('Qwen3 paths'),

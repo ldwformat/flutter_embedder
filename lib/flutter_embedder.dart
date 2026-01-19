@@ -3,11 +3,15 @@ library flutter_embedder;
 // Public surface: high-level wrapper and runtime initializer.
 export 'src/tokenizers/tokenizers.dart'
     show HfTokenizer, normalize, meanPooling, cosineDistance;
-export 'src/embeddings/jina_v3.dart' show JinaV3Embedder;
-export 'src/embeddings/qwen3.dart' show Qwen3Embedder;
-export 'src/embeddings/gemma.dart' show GemmaEmbedder;
-export 'src/embeddings/bge.dart' show BgeEmbedder;
-export 'src/embeddings/minilm.dart' show MiniLmEmbedder;
+export 'src/embeddings/jina_v3.dart'
+    show JinaV3Embedder, JinaV3EmbedderFactory;
+export 'src/embeddings/qwen3.dart'
+    show Qwen3Embedder, Qwen3EmbedderFactory;
+export 'src/embeddings/gemma.dart'
+    show GemmaEmbedder, GemmaEmbedderFactory;
+export 'src/embeddings/bge.dart' show BgeEmbedder, BgeEmbedderFactory;
+export 'src/embeddings/minilm.dart'
+    show MiniLmEmbedder, MiniLmEmbedderFactory;
 export 'src/embeddings/model_manager.dart'
     show EmbeddingModelFiles, ModelManager;
 // export 'src/rust/frb_generated.dart' show RustLib;

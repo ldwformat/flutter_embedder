@@ -133,6 +133,15 @@ final minilm = MiniLmEmbedder.create(
 By default, `withDefaultCacheDir()` uses `getApplicationSupportDirectory()`.
 Only use external storage if you want users to manage/cache files manually.
 
+Convenience factories are also available for built-in models:
+```dart
+final bge = await BgeEmbedderFactory.fromHuggingFace();
+final minilm = await MiniLmEmbedderFactory.fromHuggingFace();
+final qwen = await Qwen3EmbedderFactory.fromHuggingFace();
+final gemma = await GemmaEmbedderFactory.fromHuggingFace();
+final jina = await JinaV3EmbedderFactory.fromHuggingFace();
+```
+
 ## Android setup
 The Android app must include ONNX Runtime’s Java package so the native ORT libraries are bundled:
 ```kotlin
