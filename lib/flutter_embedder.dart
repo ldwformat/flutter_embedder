@@ -6,6 +6,10 @@ export 'src/tokenizers/tokenizers.dart'
 export 'src/embeddings/jina_v3.dart' show JinaV3Embedder;
 export 'src/embeddings/qwen3.dart' show Qwen3Embedder;
 export 'src/embeddings/gemma.dart' show GemmaEmbedder;
+export 'src/embeddings/bge.dart' show BgeEmbedder;
+export 'src/embeddings/minilm.dart' show MiniLmEmbedder;
+export 'src/embeddings/model_manager.dart'
+    show EmbeddingModelFiles, ModelManager;
 // export 'src/rust/frb_generated.dart' show RustLib;
 
 // Advanced/low-level access to generated bindings (optional).

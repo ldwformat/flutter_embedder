@@ -31,6 +31,8 @@ class _MyAppState extends State<MyApp> {
   HfTokenizer? _tokenizer;
   Qwen3Embedder? _qwenEmbedder;
   GemmaEmbedder? _gemmaEmbedder;
+  ModelManager? _modelManager;
+  final TextEditingController _hfModelController = TextEditingController();
   String? _qwenModelPath;
   String? _qwenTokenizerPath;
   String? _gemmaModelPath;
@@ -50,6 +52,7 @@ class _MyAppState extends State<MyApp> {
     _qwenTokenizerController.dispose();
     _gemmaModelController.dispose();
     _gemmaTokenizerController.dispose();
+    _hfModelController.dispose();
     super.dispose();
   }
 
@@ -61,6 +64,9 @@ class _MyAppState extends State<MyApp> {
 
     final docs = await getApplicationDocumentsDirectory();
     _docsDir = docs.path;
+
+    _modelManager = await ModelManager.withDefaultCacheDir();
+    _hfModelController.text = 'onnx-community/bge-small-en-v1.5-ONNX';
 
     _tokenizer = await HfTokenizer.fromAsset('assets/tokenizer.json');
     final tokenizerPath = await _copyAsset(
@@ -74,6 +80,7 @@ class _MyAppState extends State<MyApp> {
     _gemmaModelController.text = '${docs.path}/gemma-embedding.onnx';
 
     _appendLog('Documents dir: ${docs.path}');
+    _appendLog('Model cache dir: ${_modelManager!.cacheDir.path}');
     _appendLog('Tokenizer asset copied to: $tokenizerPath');
     _appendLog(
       'Place ONNX models at the paths above before running embeddings.',
@@ -111,6 +118,30 @@ class _MyAppState extends State<MyApp> {
     _appendLog('Tokenizer IDs: ${encoding.ids}');
     _appendLog('Tokenizer tokens: ${encoding.tokens}');
     _appendLog('Tokenizer decoded: $decoded');
+  }
+
+  Future<void> _downloadHfModel() async {
+    final manager = _modelManager;
+    if (manager == null) {
+      _appendLog('Model manager not ready yet.');
+      return;
+    }
+    final modelId = _hfModelController.text.trim();
+    if (modelId.isEmpty) {
+      _appendLog('Model id is empty.');
+      return;
+    }
+    setState(() => _loading = true);
+    try {
+      final files = await manager.fromHuggingFace(modelId: modelId);
+      _appendLog('Downloaded model: ${files.modelId}');
+      _appendLog('ONNX: ${files.modelPath}');
+      _appendLog('Tokenizer: ${files.tokenizerPath}');
+    } catch (err) {
+      _appendLog('Download failed: $err');
+    } finally {
+      setState(() => _loading = false);
+    }
   }
 
   Future<void> _runQwenDemo() async {
@@ -227,6 +258,17 @@ class _MyAppState extends State<MyApp> {
       ElevatedButton(
         onPressed: _loading ? null : _runTokenizerDemo,
         child: const Text('Run tokenizer demo'),
+      ),
+      const SizedBox(height: 16),
+      const Text('Hugging Face model download'),
+      TextField(
+        controller: _hfModelController,
+        decoration: const InputDecoration(labelText: 'modelId'),
+      ),
+      const SizedBox(height: 8),
+      ElevatedButton(
+        onPressed: _loading ? null : _downloadHfModel,
+        child: const Text('Download model'),
       ),
       const SizedBox(height: 16),
       const Text('Qwen3 paths'),

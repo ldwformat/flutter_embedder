@@ -102,6 +102,37 @@ final minilm = MiniLmEmbedder.create(
 final embedding = minilm.embed(texts: ['This is an example sentence']).first;
 ```
 
+## Model manager (assets / Hugging Face)
+Use `ModelManager` to download models by Hugging Face `modelId` or copy assets
+to a local cache directory.
+
+```dart
+final manager = await ModelManager.withDefaultCacheDir();
+
+// Download from Hugging Face by modelId.
+final files = await manager.fromHuggingFace(
+  modelId: 'onnx-community/bge-small-en-v1.5-ONNX',
+);
+final bge = BgeEmbedder.create(
+  modelPath: files.modelPath,
+  tokenizerPath: files.tokenizerPath,
+);
+
+// Load from bundled assets.
+final assetFiles = await manager.fromAssets(
+  modelId: 'my-minilm',
+  modelAssetPath: 'assets/models/onnx/model.onnx',
+  tokenizerAssetPath: 'assets/models/tokenizer.json',
+);
+final minilm = MiniLmEmbedder.create(
+  modelPath: assetFiles.modelPath,
+  tokenizerPath: assetFiles.tokenizerPath,
+);
+```
+
+By default, `withDefaultCacheDir()` uses `getApplicationSupportDirectory()`.
+Only use external storage if you want users to manage/cache files manually.
+
 ## Android setup
 The Android app must include ONNX Runtime’s Java package so the native ORT libraries are bundled:
 ```kotlin
