@@ -4,6 +4,7 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../../frb_generated.dart';
+import '../ort.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `fit_mask`
@@ -17,6 +18,17 @@ abstract class JinaV3Embedder implements RustOpaqueInterface {
     modelPath: modelPath,
     tokenizerPath: tokenizerPath,
   );
+
+  static JinaV3Embedder createWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  }) => RustLib.instance.api
+      .crateApiEmbeddingsJinaV3JinaV3EmbedderCreateWithOptions(
+        modelPath: modelPath,
+        tokenizerPath: tokenizerPath,
+        ortOptions: ortOptions,
+      );
 
   List<Float32List> embed({
     required List<String> texts,

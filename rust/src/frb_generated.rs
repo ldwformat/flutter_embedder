@@ -25,9 +25,12 @@
 
 // Section: imports
 
+use crate::api::embeddings::bge::*;
 use crate::api::embeddings::gemma::*;
 use crate::api::embeddings::jina_v3::*;
+use crate::api::embeddings::minilm::*;
 use crate::api::embeddings::qwen3::*;
+use crate::api::ort::*;
 use crate::api::utils::*;
 use flutter_rust_bridge::for_generated::byteorder::{NativeEndian, ReadBytesExt, WriteBytesExt};
 use flutter_rust_bridge::for_generated::{transform_result_dco, Lifetimeable, Lockable};
@@ -41,7 +44,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 272288121;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1539076577;
 
 // Section: executor
 
@@ -49,6 +52,197 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
+fn wire__crate__api__embeddings__bge__BgeEmbedder_create_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "BgeEmbedder_create",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_tokenizer_path = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let output_ok = crate::api::embeddings::bge::BgeEmbedder::create(
+                        api_model_path,
+                        api_tokenizer_path,
+                    )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__embeddings__bge__BgeEmbedder_create_with_options_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "BgeEmbedder_create_with_options",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_tokenizer_path = <String>::sse_decode(&mut deserializer);
+            let api_ort_options =
+                <Option<crate::api::ort::OrtInitOptions>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let output_ok = crate::api::embeddings::bge::BgeEmbedder::create_with_options(
+                        api_model_path,
+                        api_tokenizer_path,
+                        api_ort_options,
+                    )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__embeddings__bge__BgeEmbedder_embed_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "BgeEmbedder_embed",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>,
+            >>::sse_decode(&mut deserializer);
+            let api_texts = <Vec<String>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, true,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref_mut()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let mut api_that_guard = api_that_guard.unwrap();
+                    let output_ok = crate::api::embeddings::bge::BgeEmbedder::embed(
+                        &mut *api_that_guard,
+                        api_texts,
+                    )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__embeddings__bge__BgeEmbedder_format_document_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "BgeEmbedder_format_document",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_text = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok = Result::<_, ()>::Ok(
+                    crate::api::embeddings::bge::BgeEmbedder::format_document(api_text),
+                )?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__api__embeddings__bge__BgeEmbedder_format_query_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "BgeEmbedder_format_query",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_query = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok = Result::<_, ()>::Ok(
+                    crate::api::embeddings::bge::BgeEmbedder::format_query(api_query),
+                )?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
 fn wire__crate__api__embeddings__gemma__GemmaEmbedder_create_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -79,6 +273,46 @@ fn wire__crate__api__embeddings__gemma__GemmaEmbedder_create_impl(
                         api_model_path,
                         api_tokenizer_path,
                     )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__embeddings__gemma__GemmaEmbedder_create_with_options_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "GemmaEmbedder_create_with_options",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_tokenizer_path = <String>::sse_decode(&mut deserializer);
+            let api_ort_options =
+                <Option<crate::api::ort::OrtInitOptions>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let output_ok =
+                        crate::api::embeddings::gemma::GemmaEmbedder::create_with_options(
+                            api_model_path,
+                            api_tokenizer_path,
+                            api_ort_options,
+                        )?;
                     Ok(output_ok)
                 })(),
             )
@@ -237,6 +471,46 @@ fn wire__crate__api__embeddings__jina_v3__JinaV3Embedder_create_impl(
         },
     )
 }
+fn wire__crate__api__embeddings__jina_v3__JinaV3Embedder_create_with_options_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "JinaV3Embedder_create_with_options",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_tokenizer_path = <String>::sse_decode(&mut deserializer);
+            let api_ort_options =
+                <Option<crate::api::ort::OrtInitOptions>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let output_ok =
+                        crate::api::embeddings::jina_v3::JinaV3Embedder::create_with_options(
+                            api_model_path,
+                            api_tokenizer_path,
+                            api_ort_options,
+                        )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
 fn wire__crate__api__embeddings__jina_v3__JinaV3Embedder_embed_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -355,6 +629,198 @@ fn wire__crate__api__embeddings__jina_v3__JinaV3Embedder_format_query_impl(
         },
     )
 }
+fn wire__crate__api__embeddings__minilm__MiniLmEmbedder_create_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "MiniLmEmbedder_create",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_tokenizer_path = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let output_ok = crate::api::embeddings::minilm::MiniLmEmbedder::create(
+                        api_model_path,
+                        api_tokenizer_path,
+                    )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__embeddings__minilm__MiniLmEmbedder_create_with_options_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "MiniLmEmbedder_create_with_options",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_tokenizer_path = <String>::sse_decode(&mut deserializer);
+            let api_ort_options =
+                <Option<crate::api::ort::OrtInitOptions>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let output_ok =
+                        crate::api::embeddings::minilm::MiniLmEmbedder::create_with_options(
+                            api_model_path,
+                            api_tokenizer_path,
+                            api_ort_options,
+                        )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__embeddings__minilm__MiniLmEmbedder_embed_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "MiniLmEmbedder_embed",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>,
+            >>::sse_decode(&mut deserializer);
+            let api_texts = <Vec<String>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, true,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref_mut()),
+                            _ => unreachable!(),
+                        }
+                    }
+                    let mut api_that_guard = api_that_guard.unwrap();
+                    let output_ok = crate::api::embeddings::minilm::MiniLmEmbedder::embed(
+                        &mut *api_that_guard,
+                        api_texts,
+                    )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__embeddings__minilm__MiniLmEmbedder_format_document_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "MiniLmEmbedder_format_document",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_text = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok = Result::<_, ()>::Ok(
+                    crate::api::embeddings::minilm::MiniLmEmbedder::format_document(api_text),
+                )?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
+fn wire__crate__api__embeddings__minilm__MiniLmEmbedder_format_query_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "MiniLmEmbedder_format_query",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_query = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok = Result::<_, ()>::Ok(
+                    crate::api::embeddings::minilm::MiniLmEmbedder::format_query(api_query),
+                )?;
+                Ok(output_ok)
+            })())
+        },
+    )
+}
 fn wire__crate__api__embeddings__qwen3__Qwen3Embedder_create_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
@@ -385,6 +851,46 @@ fn wire__crate__api__embeddings__qwen3__Qwen3Embedder_create_impl(
                         api_model_path,
                         api_tokenizer_path,
                     )?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__embeddings__qwen3__Qwen3Embedder_create_with_options_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "Qwen3Embedder_create_with_options",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_tokenizer_path = <String>::sse_decode(&mut deserializer);
+            let api_ort_options =
+                <Option<crate::api::ort::OrtInitOptions>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let output_ok =
+                        crate::api::embeddings::qwen3::Qwen3Embedder::create_with_options(
+                            api_model_path,
+                            api_tokenizer_path,
+                            api_ort_options,
+                        )?;
                     Ok(output_ok)
                 })(),
             )
@@ -536,6 +1042,86 @@ fn wire__crate__api__tokenizer__add_special_tokens_impl(
                     crate::api::tokenizer::add_special_tokens(api_tokenizer_id, api_tokens)?;
                 Ok(output_ok)
             })())
+        },
+    )
+}
+fn wire__crate__api__ort__build_session_from_file_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "build_session_from_file",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_session_options =
+                <Option<crate::api::ort::OrtSessionOptions>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::ort::build_session_from_file(
+                            api_model_path,
+                            api_session_options,
+                        )?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__ort__build_session_from_file_with_init_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "build_session_from_file_with_init",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_model_path = <String>::sse_decode(&mut deserializer);
+            let api_ort_options =
+                <Option<crate::api::ort::OrtInitOptions>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                    (move || {
+                        let output_ok = crate::api::ort::build_session_from_file_with_init(
+                            api_model_path,
+                            api_ort_options,
+                        )?;
+                        Ok(output_ok)
+                    })(),
+                )
+            }
         },
     )
 }
@@ -853,6 +1439,39 @@ fn wire__crate__api__ort__init_ort_impl(
             transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                 (move || {
                     let output_ok = crate::api::ort::init_ort(api_name, api_path)?;
+                    Ok(output_ok)
+                })(),
+            )
+        },
+    )
+}
+fn wire__crate__api__ort__init_ort_with_options_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "init_ort_with_options",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_options =
+                <crate::api::ort::OrtEnvironmentOptions>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
+                (move || {
+                    let output_ok = crate::api::ort::init_ort_with_options(api_options)?;
                     Ok(output_ok)
                 })(),
             )
@@ -1228,11 +1847,113 @@ fn wire__crate__api__utils__normalize_impl(
         },
     )
 }
+fn wire__crate__api__ort__ort_environment_options_default_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ort_environment_options_default",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::ort::OrtEnvironmentOptions::default())?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__ort__ort_init_options_default_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ort_init_options_default",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::ort::OrtInitOptions::default())?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__ort__ort_session_options_default_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "ort_session_options_default",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::ort::OrtSessionOptions::default())?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 
 // Section: related_funcs
 
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Array2<f32>>
+);
+flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<GemmaEmbedder>
@@ -1241,7 +1962,13 @@ flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<JinaV3Embedder>
 );
 flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>
+);
+flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
     flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Qwen3Embedder>
+);
+flutter_rust_bridge::frb_generated_moi_arc_impl_value!(
+    flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>
 );
 
 // Section: dart2rust
@@ -1251,6 +1978,16 @@ impl SseDecode for flutter_rust_bridge::for_generated::anyhow::Error {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <String>::sse_decode(deserializer);
         return flutter_rust_bridge::for_generated::anyhow::anyhow!("{}", inner);
+    }
+}
+
+impl SseDecode for BgeEmbedder {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueMoi<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
     }
 }
 
@@ -1274,6 +2011,16 @@ impl SseDecode for JinaV3Embedder {
     }
 }
 
+impl SseDecode for MiniLmEmbedder {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueMoi<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
 impl SseDecode for Qwen3Embedder {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1284,8 +2031,28 @@ impl SseDecode for Qwen3Embedder {
     }
 }
 
+impl SseDecode for Session {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <RustOpaqueMoi<
+            flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>,
+        >>::sse_decode(deserializer);
+        return flutter_rust_bridge::for_generated::rust_auto_opaque_decode_owned(inner);
+    }
+}
+
 impl SseDecode
     for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Array2<f32>>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return decode_rust_opaque_moi(inner);
+    }
+}
+
+impl SseDecode
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1315,8 +2082,26 @@ impl SseDecode
 }
 
 impl SseDecode
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return decode_rust_opaque_moi(inner);
+    }
+}
+
+impl SseDecode
     for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Qwen3Embedder>>
 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <usize>::sse_decode(deserializer);
+        return decode_rust_opaque_moi(inner);
+    }
+}
+
+impl SseDecode for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <usize>::sse_decode(deserializer);
@@ -1495,6 +2280,106 @@ impl SseDecode for Option<bool> {
     }
 }
 
+impl SseDecode for Option<i64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<i64>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<crate::api::ort::OrtEnvironmentOptions> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<crate::api::ort::OrtEnvironmentOptions>::sse_decode(
+                deserializer,
+            ));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<crate::api::ort::OrtInitOptions> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<crate::api::ort::OrtInitOptions>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for Option<crate::api::ort::OrtSessionOptions> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<crate::api::ort::OrtSessionOptions>::sse_decode(
+                deserializer,
+            ));
+        } else {
+            return None;
+        }
+    }
+}
+
+impl SseDecode for crate::api::ort::OrtEnvironmentOptions {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_name = <Option<String>>::sse_decode(deserializer);
+        let mut var_dylibPath = <Option<String>>::sse_decode(deserializer);
+        let mut var_interThreads = <Option<i64>>::sse_decode(deserializer);
+        let mut var_intraThreads = <Option<i64>>::sse_decode(deserializer);
+        let mut var_spinControl = <Option<bool>>::sse_decode(deserializer);
+        let mut var_intraAffinity = <Option<String>>::sse_decode(deserializer);
+        let mut var_telemetry = <Option<bool>>::sse_decode(deserializer);
+        return crate::api::ort::OrtEnvironmentOptions {
+            name: var_name,
+            dylib_path: var_dylibPath,
+            inter_threads: var_interThreads,
+            intra_threads: var_intraThreads,
+            spin_control: var_spinControl,
+            intra_affinity: var_intraAffinity,
+            telemetry: var_telemetry,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ort::OrtInitOptions {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_environment =
+            <Option<crate::api::ort::OrtEnvironmentOptions>>::sse_decode(deserializer);
+        let mut var_session =
+            <Option<crate::api::ort::OrtSessionOptions>>::sse_decode(deserializer);
+        return crate::api::ort::OrtInitOptions {
+            environment: var_environment,
+            session: var_session,
+        };
+    }
+}
+
+impl SseDecode for crate::api::ort::OrtSessionOptions {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_intraThreads = <Option<i64>>::sse_decode(deserializer);
+        let mut var_interThreads = <Option<i64>>::sse_decode(deserializer);
+        let mut var_parallelExecution = <Option<bool>>::sse_decode(deserializer);
+        let mut var_optimizationLevel = <Option<i64>>::sse_decode(deserializer);
+        return crate::api::ort::OrtSessionOptions {
+            intra_threads: var_intraThreads,
+            inter_threads: var_interThreads,
+            parallel_execution: var_parallelExecution,
+            optimization_level: var_optimizationLevel,
+        };
+    }
+}
+
 impl SseDecode for crate::api::tokenizer::TokenOffsets {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1556,14 +2441,38 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        17 => {
+        27 => {
+            wire__crate__api__ort__build_session_from_file_impl(port, ptr, rust_vec_len, data_len)
+        }
+        28 => wire__crate__api__ort__build_session_from_file_with_init_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        32 => {
             wire__crate__api__tokenizer__decode_batch_async_impl(port, ptr, rust_vec_len, data_len)
         }
-        20 => {
+        35 => {
             wire__crate__api__tokenizer__encode_batch_async_impl(port, ptr, rust_vec_len, data_len)
         }
-        21 => wire__crate__api__init_app_impl(port, ptr, rust_vec_len, data_len),
-        30 => wire__crate__api__utils__mean_pooling_ndarray_impl(port, ptr, rust_vec_len, data_len),
+        36 => wire__crate__api__init_app_impl(port, ptr, rust_vec_len, data_len),
+        46 => wire__crate__api__utils__mean_pooling_ndarray_impl(port, ptr, rust_vec_len, data_len),
+        49 => wire__crate__api__ort__ort_environment_options_default_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        50 => {
+            wire__crate__api__ort__ort_init_options_default_impl(port, ptr, rust_vec_len, data_len)
+        }
+        51 => wire__crate__api__ort__ort_session_options_default_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
         _ => unreachable!(),
     }
 }
@@ -1576,105 +2485,180 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__api__embeddings__gemma__GemmaEmbedder_create_impl(
+        1 => {
+            wire__crate__api__embeddings__bge__BgeEmbedder_create_impl(ptr, rust_vec_len, data_len)
+        }
+        2 => wire__crate__api__embeddings__bge__BgeEmbedder_create_with_options_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        2 => wire__crate__api__embeddings__gemma__GemmaEmbedder_embed_impl(
+        3 => wire__crate__api__embeddings__bge__BgeEmbedder_embed_impl(ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__embeddings__bge__BgeEmbedder_format_document_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        3 => wire__crate__api__embeddings__gemma__GemmaEmbedder_format_document_impl(
+        5 => wire__crate__api__embeddings__bge__BgeEmbedder_format_query_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        4 => wire__crate__api__embeddings__gemma__GemmaEmbedder_format_query_impl(
+        6 => wire__crate__api__embeddings__gemma__GemmaEmbedder_create_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        5 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_create_impl(
+        7 => wire__crate__api__embeddings__gemma__GemmaEmbedder_create_with_options_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        6 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_embed_impl(
+        8 => wire__crate__api__embeddings__gemma__GemmaEmbedder_embed_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        7 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_format_document_impl(
+        9 => wire__crate__api__embeddings__gemma__GemmaEmbedder_format_document_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        8 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_format_query_impl(
+        10 => wire__crate__api__embeddings__gemma__GemmaEmbedder_format_query_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        9 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_create_impl(
+        11 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_create_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        10 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_embed_impl(
+        12 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_create_with_options_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        11 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_format_document_impl(
+        13 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_embed_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        12 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_format_query_impl(
+        14 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_format_document_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        13 => wire__crate__api__tokenizer__add_special_tokens_impl(ptr, rust_vec_len, data_len),
-        14 => wire__crate__api__utils__cosine_distance_impl(ptr, rust_vec_len, data_len),
-        15 => wire__crate__api__tokenizer__decode_impl(ptr, rust_vec_len, data_len),
-        16 => wire__crate__api__tokenizer__decode_batch_impl(ptr, rust_vec_len, data_len),
-        18 => wire__crate__api__tokenizer__encode_impl(ptr, rust_vec_len, data_len),
-        19 => wire__crate__api__tokenizer__encode_batch_impl(ptr, rust_vec_len, data_len),
-        22 => wire__crate__api__ort__init_ort_impl(ptr, rust_vec_len, data_len),
-        23 => {
+        15 => wire__crate__api__embeddings__jina_v3__JinaV3Embedder_format_query_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        16 => wire__crate__api__embeddings__minilm__MiniLmEmbedder_create_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        17 => wire__crate__api__embeddings__minilm__MiniLmEmbedder_create_with_options_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        18 => wire__crate__api__embeddings__minilm__MiniLmEmbedder_embed_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        19 => wire__crate__api__embeddings__minilm__MiniLmEmbedder_format_document_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        20 => wire__crate__api__embeddings__minilm__MiniLmEmbedder_format_query_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        21 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_create_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        22 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_create_with_options_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        23 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_embed_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        24 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_format_document_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        25 => wire__crate__api__embeddings__qwen3__Qwen3Embedder_format_query_impl(
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        26 => wire__crate__api__tokenizer__add_special_tokens_impl(ptr, rust_vec_len, data_len),
+        29 => wire__crate__api__utils__cosine_distance_impl(ptr, rust_vec_len, data_len),
+        30 => wire__crate__api__tokenizer__decode_impl(ptr, rust_vec_len, data_len),
+        31 => wire__crate__api__tokenizer__decode_batch_impl(ptr, rust_vec_len, data_len),
+        33 => wire__crate__api__tokenizer__encode_impl(ptr, rust_vec_len, data_len),
+        34 => wire__crate__api__tokenizer__encode_batch_impl(ptr, rust_vec_len, data_len),
+        37 => wire__crate__api__ort__init_ort_impl(ptr, rust_vec_len, data_len),
+        38 => wire__crate__api__ort__init_ort_with_options_impl(ptr, rust_vec_len, data_len),
+        39 => {
             wire__crate__api__tokenizer__load_tokenizer_from_bytes_impl(ptr, rust_vec_len, data_len)
         }
-        24 => wire__crate__api__tokenizer__load_tokenizer_from_bytes_with_special_tokens_impl(
+        40 => wire__crate__api__tokenizer__load_tokenizer_from_bytes_with_special_tokens_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        25 => {
+        41 => {
             wire__crate__api__tokenizer__load_tokenizer_from_file_impl(ptr, rust_vec_len, data_len)
         }
-        26 => wire__crate__api__tokenizer__load_tokenizer_from_file_with_special_tokens_impl(
+        42 => wire__crate__api__tokenizer__load_tokenizer_from_file_with_special_tokens_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        27 => {
+        43 => {
             wire__crate__api__tokenizer__load_tokenizer_from_json_impl(ptr, rust_vec_len, data_len)
         }
-        28 => wire__crate__api__tokenizer__load_tokenizer_from_json_with_special_tokens_impl(
+        44 => wire__crate__api__tokenizer__load_tokenizer_from_json_with_special_tokens_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        29 => wire__crate__api__utils__mean_pooling_impl(ptr, rust_vec_len, data_len),
-        31 => wire__crate__api__utils__mean_pooling_vec_impl(ptr, rust_vec_len, data_len),
-        32 => wire__crate__api__utils__normalize_impl(ptr, rust_vec_len, data_len),
+        45 => wire__crate__api__utils__mean_pooling_impl(ptr, rust_vec_len, data_len),
+        47 => wire__crate__api__utils__mean_pooling_vec_impl(ptr, rust_vec_len, data_len),
+        48 => wire__crate__api__utils__normalize_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
 
 // Section: rust2dart
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<BgeEmbedder> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<BgeEmbedder> {}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<BgeEmbedder>> for BgeEmbedder {
+    fn into_into_dart(self) -> FrbWrapper<BgeEmbedder> {
+        self.into()
+    }
+}
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<GemmaEmbedder> {
@@ -1707,6 +2691,21 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<JinaV3Embedder>> for JinaV3Emb
 }
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<MiniLmEmbedder> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<MiniLmEmbedder> {}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<MiniLmEmbedder>> for MiniLmEmbedder {
+    fn into_into_dart(self) -> FrbWrapper<MiniLmEmbedder> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<Qwen3Embedder> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
@@ -1717,6 +2716,21 @@ impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<
 
 impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Qwen3Embedder>> for Qwen3Embedder {
     fn into_into_dart(self) -> FrbWrapper<Qwen3Embedder> {
+        self.into()
+    }
+}
+
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<Session> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self.0)
+            .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<Session> {}
+
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<Session>> for Session {
+    fn into_into_dart(self) -> FrbWrapper<Session> {
         self.into()
     }
 }
@@ -1743,6 +2757,76 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::tokenizer::EncodeOutput>
     for crate::api::tokenizer::EncodeOutput
 {
     fn into_into_dart(self) -> crate::api::tokenizer::EncodeOutput {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ort::OrtEnvironmentOptions {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.name.into_into_dart().into_dart(),
+            self.dylib_path.into_into_dart().into_dart(),
+            self.inter_threads.into_into_dart().into_dart(),
+            self.intra_threads.into_into_dart().into_dart(),
+            self.spin_control.into_into_dart().into_dart(),
+            self.intra_affinity.into_into_dart().into_dart(),
+            self.telemetry.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::ort::OrtEnvironmentOptions
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ort::OrtEnvironmentOptions>
+    for crate::api::ort::OrtEnvironmentOptions
+{
+    fn into_into_dart(self) -> crate::api::ort::OrtEnvironmentOptions {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ort::OrtInitOptions {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.environment.into_into_dart().into_dart(),
+            self.session.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::ort::OrtInitOptions
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ort::OrtInitOptions>
+    for crate::api::ort::OrtInitOptions
+{
+    fn into_into_dart(self) -> crate::api::ort::OrtInitOptions {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::ort::OrtSessionOptions {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.intra_threads.into_into_dart().into_dart(),
+            self.inter_threads.into_into_dart().into_dart(),
+            self.parallel_execution.into_into_dart().into_dart(),
+            self.optimization_level.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::ort::OrtSessionOptions
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::ort::OrtSessionOptions>
+    for crate::api::ort::OrtSessionOptions
+{
+    fn into_into_dart(self) -> crate::api::ort::OrtSessionOptions {
         self
     }
 }
@@ -1775,6 +2859,13 @@ impl SseEncode for flutter_rust_bridge::for_generated::anyhow::Error {
     }
 }
 
+impl SseEncode for BgeEmbedder {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
+    }
+}
+
 impl SseEncode for GemmaEmbedder {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -1789,6 +2880,13 @@ impl SseEncode for JinaV3Embedder {
     }
 }
 
+impl SseEncode for MiniLmEmbedder {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
+    }
+}
+
 impl SseEncode for Qwen3Embedder {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -1796,8 +2894,26 @@ impl SseEncode for Qwen3Embedder {
     }
 }
 
+impl SseEncode for Session {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>>>::sse_encode(flutter_rust_bridge::for_generated::rust_auto_opaque_encode::<_, MoiArc<_>>(self), serializer);
+    }
+}
+
 impl SseEncode
     for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Array2<f32>>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
+impl SseEncode
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -1830,8 +2946,28 @@ impl SseEncode
 }
 
 impl SseEncode
+    for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>>
+{
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
+impl SseEncode
     for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Qwen3Embedder>>
 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        let (ptr, size) = self.sse_encode_raw();
+        <usize>::sse_encode(ptr, serializer);
+        <i32>::sse_encode(size, serializer);
+    }
+}
+
+impl SseEncode for RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         let (ptr, size) = self.sse_encode_raw();
@@ -1980,6 +3116,77 @@ impl SseEncode for Option<bool> {
     }
 }
 
+impl SseEncode for Option<i64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <i64>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<crate::api::ort::OrtEnvironmentOptions> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::api::ort::OrtEnvironmentOptions>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<crate::api::ort::OrtInitOptions> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::api::ort::OrtInitOptions>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<crate::api::ort::OrtSessionOptions> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <crate::api::ort::OrtSessionOptions>::sse_encode(value, serializer);
+        }
+    }
+}
+
+impl SseEncode for crate::api::ort::OrtEnvironmentOptions {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Option<String>>::sse_encode(self.name, serializer);
+        <Option<String>>::sse_encode(self.dylib_path, serializer);
+        <Option<i64>>::sse_encode(self.inter_threads, serializer);
+        <Option<i64>>::sse_encode(self.intra_threads, serializer);
+        <Option<bool>>::sse_encode(self.spin_control, serializer);
+        <Option<String>>::sse_encode(self.intra_affinity, serializer);
+        <Option<bool>>::sse_encode(self.telemetry, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ort::OrtInitOptions {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Option<crate::api::ort::OrtEnvironmentOptions>>::sse_encode(self.environment, serializer);
+        <Option<crate::api::ort::OrtSessionOptions>>::sse_encode(self.session, serializer);
+    }
+}
+
+impl SseEncode for crate::api::ort::OrtSessionOptions {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Option<i64>>::sse_encode(self.intra_threads, serializer);
+        <Option<i64>>::sse_encode(self.inter_threads, serializer);
+        <Option<bool>>::sse_encode(self.parallel_execution, serializer);
+        <Option<i64>>::sse_encode(self.optimization_level, serializer);
+    }
+}
+
 impl SseEncode for crate::api::tokenizer::TokenOffsets {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -2039,9 +3246,12 @@ mod io {
     // Section: imports
 
     use super::*;
+    use crate::api::embeddings::bge::*;
     use crate::api::embeddings::gemma::*;
     use crate::api::embeddings::jina_v3::*;
+    use crate::api::embeddings::minilm::*;
     use crate::api::embeddings::qwen3::*;
+    use crate::api::ort::*;
     use crate::api::utils::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
@@ -2054,59 +3264,101 @@ mod io {
     flutter_rust_bridge::frb_generated_boilerplate_io!();
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_flutter_embeddings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArray2f32(
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArray2f32(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Array2 < f32 >>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_flutter_embeddings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArray2f32(
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArray2f32(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Array2 < f32 >>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_flutter_embeddings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>>::increment_strong_count(ptr as _);
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>>::decrement_strong_count(ptr as _);
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<GemmaEmbedder>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_flutter_embeddings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<GemmaEmbedder>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_flutter_embeddings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerJinaV3Embedder(
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerJinaV3Embedder(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<JinaV3Embedder>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_flutter_embeddings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerJinaV3Embedder(
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerJinaV3Embedder(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<JinaV3Embedder>>::decrement_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_flutter_embeddings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>>::increment_strong_count(ptr as _);
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>>::decrement_strong_count(ptr as _);
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Qwen3Embedder>>::increment_strong_count(ptr as _);
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_flutter_embeddings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Qwen3Embedder>>::decrement_strong_count(ptr as _);
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>>::increment_strong_count(ptr as _);
+    }
+
+    #[unsafe(no_mangle)]
+    pub extern "C" fn frbgen_flutter_embedder_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>>::decrement_strong_count(ptr as _);
     }
 }
 #[cfg(not(target_family = "wasm"))]
@@ -2121,9 +3373,12 @@ mod web {
     // Section: imports
 
     use super::*;
+    use crate::api::embeddings::bge::*;
     use crate::api::embeddings::gemma::*;
     use crate::api::embeddings::jina_v3::*;
+    use crate::api::embeddings::minilm::*;
     use crate::api::embeddings::qwen3::*;
+    use crate::api::ort::*;
     use crate::api::utils::*;
     use flutter_rust_bridge::for_generated::byteorder::{
         NativeEndian, ReadBytesExt, WriteBytesExt,
@@ -2149,6 +3404,20 @@ mod web {
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Array2 < f32 >>>::decrement_strong_count(ptr as _);
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>>::increment_strong_count(ptr as _);
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>>::decrement_strong_count(ptr as _);
     }
 
     #[wasm_bindgen]
@@ -2180,6 +3449,20 @@ mod web {
     }
 
     #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>>::increment_strong_count(ptr as _);
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>>::decrement_strong_count(ptr as _);
+    }
+
+    #[wasm_bindgen]
     pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
         ptr: *const std::ffi::c_void,
     ) {
@@ -2191,6 +3474,20 @@ mod web {
         ptr: *const std::ffi::c_void,
     ) {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Qwen3Embedder>>::decrement_strong_count(ptr as _);
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>>::increment_strong_count(ptr as _);
+    }
+
+    #[wasm_bindgen]
+    pub fn rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+        ptr: *const std::ffi::c_void,
+    ) {
+        MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>>::decrement_strong_count(ptr as _);
     }
 }
 #[cfg(target_family = "wasm")]

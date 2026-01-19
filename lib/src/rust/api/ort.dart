@@ -6,5 +6,133 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
+// These functions are ignored because they are not marked as `pub`: `apply_session_options`, `has_thread_options`, `init_ort_from_options`, `to_positive_usize`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`
+
 bool initOrt({required String name, String? path}) =>
     RustLib.instance.api.crateApiOrtInitOrt(name: name, path: path);
+
+bool initOrtWithOptions({required OrtEnvironmentOptions options}) =>
+    RustLib.instance.api.crateApiOrtInitOrtWithOptions(options: options);
+
+Future<Session> buildSessionFromFileWithInit({
+  required String modelPath,
+  OrtInitOptions? ortOptions,
+}) => RustLib.instance.api.crateApiOrtBuildSessionFromFileWithInit(
+  modelPath: modelPath,
+  ortOptions: ortOptions,
+);
+
+Future<Session> buildSessionFromFile({
+  required String modelPath,
+  OrtSessionOptions? sessionOptions,
+}) => RustLib.instance.api.crateApiOrtBuildSessionFromFile(
+  modelPath: modelPath,
+  sessionOptions: sessionOptions,
+);
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>>
+abstract class Session implements RustOpaqueInterface {}
+
+class OrtEnvironmentOptions {
+  final String? name;
+  final String? dylibPath;
+  final PlatformInt64? interThreads;
+  final PlatformInt64? intraThreads;
+  final bool? spinControl;
+  final String? intraAffinity;
+  final bool? telemetry;
+
+  const OrtEnvironmentOptions({
+    this.name,
+    this.dylibPath,
+    this.interThreads,
+    this.intraThreads,
+    this.spinControl,
+    this.intraAffinity,
+    this.telemetry,
+  });
+
+  static Future<OrtEnvironmentOptions> default_() =>
+      RustLib.instance.api.crateApiOrtOrtEnvironmentOptionsDefault();
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      dylibPath.hashCode ^
+      interThreads.hashCode ^
+      intraThreads.hashCode ^
+      spinControl.hashCode ^
+      intraAffinity.hashCode ^
+      telemetry.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OrtEnvironmentOptions &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          dylibPath == other.dylibPath &&
+          interThreads == other.interThreads &&
+          intraThreads == other.intraThreads &&
+          spinControl == other.spinControl &&
+          intraAffinity == other.intraAffinity &&
+          telemetry == other.telemetry;
+}
+
+class OrtInitOptions {
+  final OrtEnvironmentOptions? environment;
+  final OrtSessionOptions? session;
+
+  const OrtInitOptions({this.environment, this.session});
+
+  static Future<OrtInitOptions> default_() =>
+      RustLib.instance.api.crateApiOrtOrtInitOptionsDefault();
+
+  @override
+  int get hashCode => environment.hashCode ^ session.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OrtInitOptions &&
+          runtimeType == other.runtimeType &&
+          environment == other.environment &&
+          session == other.session;
+}
+
+class OrtSessionOptions {
+  final PlatformInt64? intraThreads;
+  final PlatformInt64? interThreads;
+  final bool? parallelExecution;
+
+  /// 0..=3 mapping to ORT graph optimization levels.
+  final PlatformInt64? optimizationLevel;
+
+  const OrtSessionOptions({
+    this.intraThreads,
+    this.interThreads,
+    this.parallelExecution,
+    this.optimizationLevel,
+  });
+
+  static Future<OrtSessionOptions> default_() =>
+      RustLib.instance.api.crateApiOrtOrtSessionOptionsDefault();
+
+  @override
+  int get hashCode =>
+      intraThreads.hashCode ^
+      interThreads.hashCode ^
+      parallelExecution.hashCode ^
+      optimizationLevel.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OrtSessionOptions &&
+          runtimeType == other.runtimeType &&
+          intraThreads == other.intraThreads &&
+          interThreads == other.interThreads &&
+          parallelExecution == other.parallelExecution &&
+          optimizationLevel == other.optimizationLevel;
+}

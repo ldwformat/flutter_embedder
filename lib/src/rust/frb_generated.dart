@@ -3,8 +3,10 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+import 'api/embeddings/bge.dart';
 import 'api/embeddings/gemma.dart';
 import 'api/embeddings/jina_v3.dart';
+import 'api/embeddings/minilm.dart';
 import 'api/embeddings/qwen3.dart';
 import 'api/ort.dart';
 import 'api/tokenizer.dart';
@@ -71,7 +73,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => 272288121;
+  int get rustContentHash => 1539076577;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -82,9 +84,35 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
+  BgeEmbedder crateApiEmbeddingsBgeBgeEmbedderCreate({
+    required String modelPath,
+    required String tokenizerPath,
+  });
+
+  BgeEmbedder crateApiEmbeddingsBgeBgeEmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  });
+
+  List<Float32List> crateApiEmbeddingsBgeBgeEmbedderEmbed({
+    required BgeEmbedder that,
+    required List<String> texts,
+  });
+
+  String crateApiEmbeddingsBgeBgeEmbedderFormatDocument({required String text});
+
+  String crateApiEmbeddingsBgeBgeEmbedderFormatQuery({required String query});
+
   GemmaEmbedder crateApiEmbeddingsGemmaGemmaEmbedderCreate({
     required String modelPath,
     required String tokenizerPath,
+  });
+
+  GemmaEmbedder crateApiEmbeddingsGemmaGemmaEmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
   });
 
   List<Float32List> crateApiEmbeddingsGemmaGemmaEmbedderEmbed({
@@ -105,6 +133,12 @@ abstract class RustLibApi extends BaseApi {
     required String tokenizerPath,
   });
 
+  JinaV3Embedder crateApiEmbeddingsJinaV3JinaV3EmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  });
+
   List<Float32List> crateApiEmbeddingsJinaV3JinaV3EmbedderEmbed({
     required JinaV3Embedder that,
     required List<String> texts,
@@ -119,9 +153,39 @@ abstract class RustLibApi extends BaseApi {
     required String query,
   });
 
+  MiniLmEmbedder crateApiEmbeddingsMinilmMiniLmEmbedderCreate({
+    required String modelPath,
+    required String tokenizerPath,
+  });
+
+  MiniLmEmbedder crateApiEmbeddingsMinilmMiniLmEmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  });
+
+  List<Float32List> crateApiEmbeddingsMinilmMiniLmEmbedderEmbed({
+    required MiniLmEmbedder that,
+    required List<String> texts,
+  });
+
+  String crateApiEmbeddingsMinilmMiniLmEmbedderFormatDocument({
+    required String text,
+  });
+
+  String crateApiEmbeddingsMinilmMiniLmEmbedderFormatQuery({
+    required String query,
+  });
+
   Qwen3Embedder crateApiEmbeddingsQwen3Qwen3EmbedderCreate({
     required String modelPath,
     required String tokenizerPath,
+  });
+
+  Qwen3Embedder crateApiEmbeddingsQwen3Qwen3EmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
   });
 
   List<Float32List> crateApiEmbeddingsQwen3Qwen3EmbedderEmbed({
@@ -140,6 +204,16 @@ abstract class RustLibApi extends BaseApi {
   int crateApiTokenizerAddSpecialTokens({
     required BigInt tokenizerId,
     required List<String> tokens,
+  });
+
+  Future<Session> crateApiOrtBuildSessionFromFile({
+    required String modelPath,
+    OrtSessionOptions? sessionOptions,
+  });
+
+  Future<Session> crateApiOrtBuildSessionFromFileWithInit({
+    required String modelPath,
+    OrtInitOptions? ortOptions,
   });
 
   double crateApiUtilsCosineDistance({
@@ -187,6 +261,8 @@ abstract class RustLibApi extends BaseApi {
 
   bool crateApiOrtInitOrt({required String name, String? path});
 
+  bool crateApiOrtInitOrtWithOptions({required OrtEnvironmentOptions options});
+
   BigInt crateApiTokenizerLoadTokenizerFromBytes({required List<int> bytes});
 
   BigInt crateApiTokenizerLoadTokenizerFromBytesWithSpecialTokens({
@@ -225,6 +301,12 @@ abstract class RustLibApi extends BaseApi {
 
   Float32List crateApiUtilsNormalize({required List<double> embedding});
 
+  Future<OrtEnvironmentOptions> crateApiOrtOrtEnvironmentOptionsDefault();
+
+  Future<OrtInitOptions> crateApiOrtOrtInitOptionsDefault();
+
+  Future<OrtSessionOptions> crateApiOrtOrtSessionOptionsDefault();
+
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_Array2F32;
 
@@ -232,6 +314,14 @@ abstract class RustLibApi extends BaseApi {
   get rust_arc_decrement_strong_count_Array2F32;
 
   CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_Array2F32Ptr;
+
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_BgeEmbedder;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_BgeEmbedder;
+
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_BgeEmbedderPtr;
 
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_GemmaEmbedder;
@@ -252,6 +342,15 @@ abstract class RustLibApi extends BaseApi {
   get rust_arc_decrement_strong_count_JinaV3EmbedderPtr;
 
   RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_MiniLmEmbedder;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_MiniLmEmbedder;
+
+  CrossPlatformFinalizerArg
+  get rust_arc_decrement_strong_count_MiniLmEmbedderPtr;
+
+  RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_Qwen3Embedder;
 
   RustArcDecrementStrongCountFnType
@@ -259,6 +358,12 @@ abstract class RustLibApi extends BaseApi {
 
   CrossPlatformFinalizerArg
   get rust_arc_decrement_strong_count_Qwen3EmbedderPtr;
+
+  RustArcIncrementStrongCountFnType get rust_arc_increment_strong_count_Session;
+
+  RustArcDecrementStrongCountFnType get rust_arc_decrement_strong_count_Session;
+
+  CrossPlatformFinalizerArg get rust_arc_decrement_strong_count_SessionPtr;
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -268,6 +373,158 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required super.generalizedFrbRustBinding,
     required super.portManager,
   });
+
+  @override
+  BgeEmbedder crateApiEmbeddingsBgeBgeEmbedderCreate({
+    required String modelPath,
+    required String tokenizerPath,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_String(tokenizerPath, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiEmbeddingsBgeBgeEmbedderCreateConstMeta,
+        argValues: [modelPath, tokenizerPath],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmbeddingsBgeBgeEmbedderCreateConstMeta =>
+      const TaskConstMeta(
+        debugName: "BgeEmbedder_create",
+        argNames: ["modelPath", "tokenizerPath"],
+      );
+
+  @override
+  BgeEmbedder crateApiEmbeddingsBgeBgeEmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_String(tokenizerPath, serializer);
+          sse_encode_opt_box_autoadd_ort_init_options(ortOptions, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiEmbeddingsBgeBgeEmbedderCreateWithOptionsConstMeta,
+        argValues: [modelPath, tokenizerPath, ortOptions],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiEmbeddingsBgeBgeEmbedderCreateWithOptionsConstMeta =>
+      const TaskConstMeta(
+        debugName: "BgeEmbedder_create_with_options",
+        argNames: ["modelPath", "tokenizerPath", "ortOptions"],
+      );
+
+  @override
+  List<Float32List> crateApiEmbeddingsBgeBgeEmbedderEmbed({
+    required BgeEmbedder that,
+    required List<String> texts,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+            that,
+            serializer,
+          );
+          sse_encode_list_String(texts, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_list_prim_f_32_strict,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiEmbeddingsBgeBgeEmbedderEmbedConstMeta,
+        argValues: [that, texts],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmbeddingsBgeBgeEmbedderEmbedConstMeta =>
+      const TaskConstMeta(
+        debugName: "BgeEmbedder_embed",
+        argNames: ["that", "texts"],
+      );
+
+  @override
+  String crateApiEmbeddingsBgeBgeEmbedderFormatDocument({
+    required String text,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(text, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiEmbeddingsBgeBgeEmbedderFormatDocumentConstMeta,
+        argValues: [text],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmbeddingsBgeBgeEmbedderFormatDocumentConstMeta =>
+      const TaskConstMeta(
+        debugName: "BgeEmbedder_format_document",
+        argNames: ["text"],
+      );
+
+  @override
+  String crateApiEmbeddingsBgeBgeEmbedderFormatQuery({required String query}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(query, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiEmbeddingsBgeBgeEmbedderFormatQueryConstMeta,
+        argValues: [query],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmbeddingsBgeBgeEmbedderFormatQueryConstMeta =>
+      const TaskConstMeta(
+        debugName: "BgeEmbedder_format_query",
+        argNames: ["query"],
+      );
 
   @override
   GemmaEmbedder crateApiEmbeddingsGemmaGemmaEmbedderCreate({
@@ -280,7 +537,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(modelPath, serializer);
           sse_encode_String(tokenizerPath, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
         },
         codec: SseCodec(
           decodeSuccessData:
@@ -301,6 +558,41 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  GemmaEmbedder crateApiEmbeddingsGemmaGemmaEmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_String(tokenizerPath, serializer);
+          sse_encode_opt_box_autoadd_ort_init_options(ortOptions, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta:
+            kCrateApiEmbeddingsGemmaGemmaEmbedderCreateWithOptionsConstMeta,
+        argValues: [modelPath, tokenizerPath, ortOptions],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiEmbeddingsGemmaGemmaEmbedderCreateWithOptionsConstMeta =>
+      const TaskConstMeta(
+        debugName: "GemmaEmbedder_create_with_options",
+        argNames: ["modelPath", "tokenizerPath", "ortOptions"],
+      );
+
+  @override
   List<Float32List> crateApiEmbeddingsGemmaGemmaEmbedderEmbed({
     required GemmaEmbedder that,
     required List<String> texts,
@@ -314,7 +606,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             serializer,
           );
           sse_encode_list_String(texts, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_list_prim_f_32_strict,
@@ -342,7 +634,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(text, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -371,7 +663,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(query, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -401,7 +693,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(modelPath, serializer);
           sse_encode_String(tokenizerPath, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
         },
         codec: SseCodec(
           decodeSuccessData:
@@ -422,6 +714,41 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  JinaV3Embedder crateApiEmbeddingsJinaV3JinaV3EmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_String(tokenizerPath, serializer);
+          sse_encode_opt_box_autoadd_ort_init_options(ortOptions, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerJinaV3Embedder,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta:
+            kCrateApiEmbeddingsJinaV3JinaV3EmbedderCreateWithOptionsConstMeta,
+        argValues: [modelPath, tokenizerPath, ortOptions],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiEmbeddingsJinaV3JinaV3EmbedderCreateWithOptionsConstMeta =>
+      const TaskConstMeta(
+        debugName: "JinaV3Embedder_create_with_options",
+        argNames: ["modelPath", "tokenizerPath", "ortOptions"],
+      );
+
+  @override
   List<Float32List> crateApiEmbeddingsJinaV3JinaV3EmbedderEmbed({
     required JinaV3Embedder that,
     required List<String> texts,
@@ -437,7 +764,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
           sse_encode_list_String(texts, serializer);
           sse_encode_i_64(taskId, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_list_prim_f_32_strict,
@@ -465,7 +792,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(text, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -495,7 +822,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(query, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -516,6 +843,164 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  MiniLmEmbedder crateApiEmbeddingsMinilmMiniLmEmbedderCreate({
+    required String modelPath,
+    required String tokenizerPath,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_String(tokenizerPath, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiEmbeddingsMinilmMiniLmEmbedderCreateConstMeta,
+        argValues: [modelPath, tokenizerPath],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmbeddingsMinilmMiniLmEmbedderCreateConstMeta =>
+      const TaskConstMeta(
+        debugName: "MiniLmEmbedder_create",
+        argNames: ["modelPath", "tokenizerPath"],
+      );
+
+  @override
+  MiniLmEmbedder crateApiEmbeddingsMinilmMiniLmEmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_String(tokenizerPath, serializer);
+          sse_encode_opt_box_autoadd_ort_init_options(ortOptions, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta:
+            kCrateApiEmbeddingsMinilmMiniLmEmbedderCreateWithOptionsConstMeta,
+        argValues: [modelPath, tokenizerPath, ortOptions],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiEmbeddingsMinilmMiniLmEmbedderCreateWithOptionsConstMeta =>
+      const TaskConstMeta(
+        debugName: "MiniLmEmbedder_create_with_options",
+        argNames: ["modelPath", "tokenizerPath", "ortOptions"],
+      );
+
+  @override
+  List<Float32List> crateApiEmbeddingsMinilmMiniLmEmbedderEmbed({
+    required MiniLmEmbedder that,
+    required List<String> texts,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+            that,
+            serializer,
+          );
+          sse_encode_list_String(texts, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_list_prim_f_32_strict,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiEmbeddingsMinilmMiniLmEmbedderEmbedConstMeta,
+        argValues: [that, texts],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiEmbeddingsMinilmMiniLmEmbedderEmbedConstMeta =>
+      const TaskConstMeta(
+        debugName: "MiniLmEmbedder_embed",
+        argNames: ["that", "texts"],
+      );
+
+  @override
+  String crateApiEmbeddingsMinilmMiniLmEmbedderFormatDocument({
+    required String text,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(text, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta:
+            kCrateApiEmbeddingsMinilmMiniLmEmbedderFormatDocumentConstMeta,
+        argValues: [text],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiEmbeddingsMinilmMiniLmEmbedderFormatDocumentConstMeta =>
+      const TaskConstMeta(
+        debugName: "MiniLmEmbedder_format_document",
+        argNames: ["text"],
+      );
+
+  @override
+  String crateApiEmbeddingsMinilmMiniLmEmbedderFormatQuery({
+    required String query,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(query, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiEmbeddingsMinilmMiniLmEmbedderFormatQueryConstMeta,
+        argValues: [query],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiEmbeddingsMinilmMiniLmEmbedderFormatQueryConstMeta =>
+      const TaskConstMeta(
+        debugName: "MiniLmEmbedder_format_query",
+        argNames: ["query"],
+      );
+
+  @override
   Qwen3Embedder crateApiEmbeddingsQwen3Qwen3EmbedderCreate({
     required String modelPath,
     required String tokenizerPath,
@@ -526,7 +1011,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(modelPath, serializer);
           sse_encode_String(tokenizerPath, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 21)!;
         },
         codec: SseCodec(
           decodeSuccessData:
@@ -547,6 +1032,41 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Qwen3Embedder crateApiEmbeddingsQwen3Qwen3EmbedderCreateWithOptions({
+    required String modelPath,
+    required String tokenizerPath,
+    OrtInitOptions? ortOptions,
+  }) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_String(tokenizerPath, serializer);
+          sse_encode_opt_box_autoadd_ort_init_options(ortOptions, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta:
+            kCrateApiEmbeddingsQwen3Qwen3EmbedderCreateWithOptionsConstMeta,
+        argValues: [modelPath, tokenizerPath, ortOptions],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta
+  get kCrateApiEmbeddingsQwen3Qwen3EmbedderCreateWithOptionsConstMeta =>
+      const TaskConstMeta(
+        debugName: "Qwen3Embedder_create_with_options",
+        argNames: ["modelPath", "tokenizerPath", "ortOptions"],
+      );
+
+  @override
   List<Float32List> crateApiEmbeddingsQwen3Qwen3EmbedderEmbed({
     required Qwen3Embedder that,
     required List<String> texts,
@@ -560,7 +1080,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             serializer,
           );
           sse_encode_list_String(texts, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_list_prim_f_32_strict,
@@ -588,7 +1108,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(text, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -617,7 +1137,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(query, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -647,7 +1167,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_u_64(tokenizerId, serializer);
           sse_encode_list_String(tokens, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_32,
@@ -667,6 +1187,81 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<Session> crateApiOrtBuildSessionFromFile({
+    required String modelPath,
+    OrtSessionOptions? sessionOptions,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_opt_box_autoadd_ort_session_options(
+            sessionOptions,
+            serializer,
+          );
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 27,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiOrtBuildSessionFromFileConstMeta,
+        argValues: [modelPath, sessionOptions],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiOrtBuildSessionFromFileConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_session_from_file",
+        argNames: ["modelPath", "sessionOptions"],
+      );
+
+  @override
+  Future<Session> crateApiOrtBuildSessionFromFileWithInit({
+    required String modelPath,
+    OrtInitOptions? ortOptions,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(modelPath, serializer);
+          sse_encode_opt_box_autoadd_ort_init_options(ortOptions, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 28,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData:
+              sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiOrtBuildSessionFromFileWithInitConstMeta,
+        argValues: [modelPath, ortOptions],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiOrtBuildSessionFromFileWithInitConstMeta =>
+      const TaskConstMeta(
+        debugName: "build_session_from_file_with_init",
+        argNames: ["modelPath", "ortOptions"],
+      );
+
+  @override
   double crateApiUtilsCosineDistance({
     required List<double> a,
     required List<double> b,
@@ -677,7 +1272,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_list_prim_f_32_loose(a, serializer);
           sse_encode_list_prim_f_32_loose(b, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_f_32,
@@ -706,7 +1301,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_u_64(tokenizerId, serializer);
           sse_encode_list_prim_u_32_loose(ids, serializer);
           sse_encode_opt_box_autoadd_bool(skipSpecialTokens, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 30)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -737,7 +1332,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_u_64(tokenizerId, serializer);
           sse_encode_list_list_prim_u_32_strict(batchIds, serializer);
           sse_encode_opt_box_autoadd_bool(skipSpecialTokens, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_String,
@@ -772,7 +1367,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 17,
+            funcId: 32,
             port: port_,
           );
         },
@@ -806,7 +1401,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_u_64(tokenizerId, serializer);
           sse_encode_String(text, serializer);
           sse_encode_opt_box_autoadd_bool(addSpecialTokens, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 33)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_encode_output,
@@ -837,7 +1432,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_u_64(tokenizerId, serializer);
           sse_encode_list_String(texts, serializer);
           sse_encode_opt_box_autoadd_bool(addSpecialTokens, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 34)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_encode_output,
@@ -872,7 +1467,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 20,
+            funcId: 35,
             port: port_,
           );
         },
@@ -902,7 +1497,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 21,
+            funcId: 36,
             port: port_,
           );
         },
@@ -928,7 +1523,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(name, serializer);
           sse_encode_opt_String(path, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 22)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 37)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_bool,
@@ -945,13 +1540,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "init_ort", argNames: ["name", "path"]);
 
   @override
+  bool crateApiOrtInitOrtWithOptions({required OrtEnvironmentOptions options}) {
+    return handler.executeSync(
+      SyncTask(
+        callFfi: () {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_ort_environment_options(options, serializer);
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 38)!;
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: sse_decode_AnyhowException,
+        ),
+        constMeta: kCrateApiOrtInitOrtWithOptionsConstMeta,
+        argValues: [options],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiOrtInitOrtWithOptionsConstMeta =>
+      const TaskConstMeta(
+        debugName: "init_ort_with_options",
+        argNames: ["options"],
+      );
+
+  @override
   BigInt crateApiTokenizerLoadTokenizerFromBytes({required List<int> bytes}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_list_prim_u_8_loose(bytes, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 23)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 39)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_64,
@@ -981,7 +1602,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_list_prim_u_8_loose(bytes, serializer);
           sse_encode_list_String(specialTokens, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 24)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 40)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_64,
@@ -1009,7 +1630,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(path, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 25)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 41)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_64,
@@ -1039,7 +1660,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(path, serializer);
           sse_encode_list_String(specialTokens, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 26)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 42)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_64,
@@ -1067,7 +1688,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(json, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 27)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 43)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_64,
@@ -1097,7 +1718,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(json, serializer);
           sse_encode_list_String(specialTokens, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 28)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 44)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_u_64,
@@ -1132,7 +1753,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             serializer,
           );
           sse_encode_list_prim_u_32_loose(attentionMask, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 29)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 45)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_prim_f_32_strict,
@@ -1167,7 +1788,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 30,
+            funcId: 46,
             port: port_,
           );
         },
@@ -1199,7 +1820,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_list_list_prim_f_32_strict(embeddings, serializer);
           sse_encode_list_prim_u_32_loose(attentionMask, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 31)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 47)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_prim_f_32_strict,
@@ -1225,7 +1846,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_list_prim_f_32_loose(embedding, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 32)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 48)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_list_prim_f_32_strict,
@@ -1241,6 +1862,93 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiUtilsNormalizeConstMeta =>
       const TaskConstMeta(debugName: "normalize", argNames: ["embedding"]);
 
+  @override
+  Future<OrtEnvironmentOptions> crateApiOrtOrtEnvironmentOptionsDefault() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 49,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_ort_environment_options,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiOrtOrtEnvironmentOptionsDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiOrtOrtEnvironmentOptionsDefaultConstMeta =>
+      const TaskConstMeta(
+        debugName: "ort_environment_options_default",
+        argNames: [],
+      );
+
+  @override
+  Future<OrtInitOptions> crateApiOrtOrtInitOptionsDefault() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 50,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_ort_init_options,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiOrtOrtInitOptionsDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiOrtOrtInitOptionsDefaultConstMeta =>
+      const TaskConstMeta(debugName: "ort_init_options_default", argNames: []);
+
+  @override
+  Future<OrtSessionOptions> crateApiOrtOrtSessionOptionsDefault() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 51,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_ort_session_options,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiOrtOrtSessionOptionsDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiOrtOrtSessionOptionsDefaultConstMeta =>
+      const TaskConstMeta(
+        debugName: "ort_session_options_default",
+        argNames: [],
+      );
+
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_Array2F32 => wire
       .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArray2f32;
@@ -1248,6 +1956,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   RustArcDecrementStrongCountFnType
   get rust_arc_decrement_strong_count_Array2F32 => wire
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerArray2f32;
+
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_BgeEmbedder => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_BgeEmbedder => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder;
 
   RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_GemmaEmbedder => wire
@@ -1266,6 +1982,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerJinaV3Embedder;
 
   RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_MiniLmEmbedder => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_MiniLmEmbedder => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder;
+
+  RustArcIncrementStrongCountFnType
   get rust_arc_increment_strong_count_Qwen3Embedder => wire
       .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder;
 
@@ -1273,10 +1997,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   get rust_arc_decrement_strong_count_Qwen3Embedder => wire
       .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder;
 
+  RustArcIncrementStrongCountFnType
+  get rust_arc_increment_strong_count_Session => wire
+      .rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession;
+
+  RustArcDecrementStrongCountFnType
+  get rust_arc_decrement_strong_count_Session => wire
+      .rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession;
+
   @protected
   AnyhowException dco_decode_AnyhowException(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return AnyhowException(raw as String);
+  }
+
+  @protected
+  BgeEmbedder
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return BgeEmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -1298,12 +2039,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  MiniLmEmbedder
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return MiniLmEmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   Qwen3Embedder
   dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return Qwen3EmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  Session
+  dco_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return SessionImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  BgeEmbedder
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return BgeEmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -1322,6 +2090,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return JinaV3EmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  MiniLmEmbedder
+  dco_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return MiniLmEmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -1352,6 +2129,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BgeEmbedder
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return BgeEmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   GemmaEmbedder
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
     dynamic raw,
@@ -1370,12 +2156,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  MiniLmEmbedder
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return MiniLmEmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
   Qwen3Embedder
   dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
     dynamic raw,
   ) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return Qwen3EmbedderImpl.frbInternalDcoDecode(raw as List<dynamic>);
+  }
+
+  @protected
+  Session
+  dco_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return SessionImpl.frbInternalDcoDecode(raw as List<dynamic>);
   }
 
   @protected
@@ -1394,6 +2198,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool dco_decode_box_autoadd_bool(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as bool;
+  }
+
+  @protected
+  PlatformInt64 dco_decode_box_autoadd_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_i_64(raw);
+  }
+
+  @protected
+  OrtEnvironmentOptions dco_decode_box_autoadd_ort_environment_options(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_ort_environment_options(raw);
+  }
+
+  @protected
+  OrtInitOptions dco_decode_box_autoadd_ort_init_options(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_ort_init_options(raw);
+  }
+
+  @protected
+  OrtSessionOptions dco_decode_box_autoadd_ort_session_options(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_ort_session_options(raw);
   }
 
   @protected
@@ -1507,6 +2337,79 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  PlatformInt64? dco_decode_opt_box_autoadd_i_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_i_64(raw);
+  }
+
+  @protected
+  OrtEnvironmentOptions? dco_decode_opt_box_autoadd_ort_environment_options(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null
+        ? null
+        : dco_decode_box_autoadd_ort_environment_options(raw);
+  }
+
+  @protected
+  OrtInitOptions? dco_decode_opt_box_autoadd_ort_init_options(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_ort_init_options(raw);
+  }
+
+  @protected
+  OrtSessionOptions? dco_decode_opt_box_autoadd_ort_session_options(
+    dynamic raw,
+  ) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_ort_session_options(raw);
+  }
+
+  @protected
+  OrtEnvironmentOptions dco_decode_ort_environment_options(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    return OrtEnvironmentOptions(
+      name: dco_decode_opt_String(arr[0]),
+      dylibPath: dco_decode_opt_String(arr[1]),
+      interThreads: dco_decode_opt_box_autoadd_i_64(arr[2]),
+      intraThreads: dco_decode_opt_box_autoadd_i_64(arr[3]),
+      spinControl: dco_decode_opt_box_autoadd_bool(arr[4]),
+      intraAffinity: dco_decode_opt_String(arr[5]),
+      telemetry: dco_decode_opt_box_autoadd_bool(arr[6]),
+    );
+  }
+
+  @protected
+  OrtInitOptions dco_decode_ort_init_options(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return OrtInitOptions(
+      environment: dco_decode_opt_box_autoadd_ort_environment_options(arr[0]),
+      session: dco_decode_opt_box_autoadd_ort_session_options(arr[1]),
+    );
+  }
+
+  @protected
+  OrtSessionOptions dco_decode_ort_session_options(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return OrtSessionOptions(
+      intraThreads: dco_decode_opt_box_autoadd_i_64(arr[0]),
+      interThreads: dco_decode_opt_box_autoadd_i_64(arr[1]),
+      parallelExecution: dco_decode_opt_box_autoadd_bool(arr[2]),
+      optimizationLevel: dco_decode_opt_box_autoadd_i_64(arr[3]),
+    );
+  }
+
+  @protected
   TokenOffsets dco_decode_token_offsets(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1556,6 +2459,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BgeEmbedder
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return BgeEmbedderImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   GemmaEmbedder
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
     SseDeserializer deserializer,
@@ -1580,12 +2495,48 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  MiniLmEmbedder
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return MiniLmEmbedderImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   Qwen3Embedder
   sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return Qwen3EmbedderImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  Session
+  sse_decode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return SessionImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  BgeEmbedder
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return BgeEmbedderImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -1610,6 +2561,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return JinaV3EmbedderImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  MiniLmEmbedder
+  sse_decode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return MiniLmEmbedderImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -1652,6 +2615,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BgeEmbedder
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return BgeEmbedderImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   GemmaEmbedder
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
     SseDeserializer deserializer,
@@ -1676,12 +2651,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  MiniLmEmbedder
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return MiniLmEmbedderImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
   Qwen3Embedder
   sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
     SseDeserializer deserializer,
   ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return Qwen3EmbedderImpl.frbInternalSseDecode(
+      sse_decode_usize(deserializer),
+      sse_decode_i_32(deserializer),
+    );
+  }
+
+  @protected
+  Session
+  sse_decode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return SessionImpl.frbInternalSseDecode(
       sse_decode_usize(deserializer),
       sse_decode_i_32(deserializer),
     );
@@ -1704,6 +2703,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool sse_decode_box_autoadd_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_bool(deserializer));
+  }
+
+  @protected
+  PlatformInt64 sse_decode_box_autoadd_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_i_64(deserializer));
+  }
+
+  @protected
+  OrtEnvironmentOptions sse_decode_box_autoadd_ort_environment_options(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_ort_environment_options(deserializer));
+  }
+
+  @protected
+  OrtInitOptions sse_decode_box_autoadd_ort_init_options(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_ort_init_options(deserializer));
+  }
+
+  @protected
+  OrtSessionOptions sse_decode_box_autoadd_ort_session_options(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_ort_session_options(deserializer));
   }
 
   @protected
@@ -1870,6 +2899,108 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  PlatformInt64? sse_decode_opt_box_autoadd_i_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_i_64(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  OrtEnvironmentOptions? sse_decode_opt_box_autoadd_ort_environment_options(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_ort_environment_options(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  OrtInitOptions? sse_decode_opt_box_autoadd_ort_init_options(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_ort_init_options(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  OrtSessionOptions? sse_decode_opt_box_autoadd_ort_session_options(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_ort_session_options(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  OrtEnvironmentOptions sse_decode_ort_environment_options(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_name = sse_decode_opt_String(deserializer);
+    var var_dylibPath = sse_decode_opt_String(deserializer);
+    var var_interThreads = sse_decode_opt_box_autoadd_i_64(deserializer);
+    var var_intraThreads = sse_decode_opt_box_autoadd_i_64(deserializer);
+    var var_spinControl = sse_decode_opt_box_autoadd_bool(deserializer);
+    var var_intraAffinity = sse_decode_opt_String(deserializer);
+    var var_telemetry = sse_decode_opt_box_autoadd_bool(deserializer);
+    return OrtEnvironmentOptions(
+      name: var_name,
+      dylibPath: var_dylibPath,
+      interThreads: var_interThreads,
+      intraThreads: var_intraThreads,
+      spinControl: var_spinControl,
+      intraAffinity: var_intraAffinity,
+      telemetry: var_telemetry,
+    );
+  }
+
+  @protected
+  OrtInitOptions sse_decode_ort_init_options(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_environment = sse_decode_opt_box_autoadd_ort_environment_options(
+      deserializer,
+    );
+    var var_session = sse_decode_opt_box_autoadd_ort_session_options(
+      deserializer,
+    );
+    return OrtInitOptions(environment: var_environment, session: var_session);
+  }
+
+  @protected
+  OrtSessionOptions sse_decode_ort_session_options(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_intraThreads = sse_decode_opt_box_autoadd_i_64(deserializer);
+    var var_interThreads = sse_decode_opt_box_autoadd_i_64(deserializer);
+    var var_parallelExecution = sse_decode_opt_box_autoadd_bool(deserializer);
+    var var_optimizationLevel = sse_decode_opt_box_autoadd_i_64(deserializer);
+    return OrtSessionOptions(
+      intraThreads: var_intraThreads,
+      interThreads: var_interThreads,
+      parallelExecution: var_parallelExecution,
+      optimizationLevel: var_optimizationLevel,
+    );
+  }
+
+  @protected
   TokenOffsets sse_decode_token_offsets(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_start = sse_decode_u_32(deserializer);
@@ -1923,6 +3054,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    BgeEmbedder self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as BgeEmbedderImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
     GemmaEmbedder self,
     SseSerializer serializer,
@@ -1949,6 +3093,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    MiniLmEmbedder self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as MiniLmEmbedderImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
     Qwen3Embedder self,
     SseSerializer serializer,
@@ -1956,6 +3113,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as Qwen3EmbedderImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+    Session self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as SessionImpl).frbInternalSseEncode(move: true),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    BgeEmbedder self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as BgeEmbedderImpl).frbInternalSseEncode(move: false),
       serializer,
     );
   }
@@ -1982,6 +3165,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as JinaV3EmbedderImpl).frbInternalSseEncode(move: false),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_Auto_RefMut_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    MiniLmEmbedder self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as MiniLmEmbedderImpl).frbInternalSseEncode(move: false),
       serializer,
     );
   }
@@ -2027,6 +3223,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerBgeEmbedder(
+    BgeEmbedder self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as BgeEmbedderImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerGemmaEmbedder(
     GemmaEmbedder self,
     SseSerializer serializer,
@@ -2053,6 +3262,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerMiniLmEmbedder(
+    MiniLmEmbedder self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as MiniLmEmbedderImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
   sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerQwen3Embedder(
     Qwen3Embedder self,
     SseSerializer serializer,
@@ -2060,6 +3282,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_usize(
       (self as Qwen3EmbedderImpl).frbInternalSseEncode(move: null),
+      serializer,
+    );
+  }
+
+  @protected
+  void
+  sse_encode_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSession(
+    Session self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_usize(
+      (self as SessionImpl).frbInternalSseEncode(move: null),
       serializer,
     );
   }
@@ -2080,6 +3315,42 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_bool(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_i_64(
+    PlatformInt64 self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_64(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_ort_environment_options(
+    OrtEnvironmentOptions self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_ort_environment_options(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_ort_init_options(
+    OrtInitOptions self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_ort_init_options(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_ort_session_options(
+    OrtSessionOptions self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_ort_session_options(self, serializer);
   }
 
   @protected
@@ -2249,6 +3520,98 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_i_64(
+    PlatformInt64? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_i_64(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_ort_environment_options(
+    OrtEnvironmentOptions? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_ort_environment_options(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_ort_init_options(
+    OrtInitOptions? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_ort_init_options(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_ort_session_options(
+    OrtSessionOptions? self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_ort_session_options(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_ort_environment_options(
+    OrtEnvironmentOptions self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_String(self.name, serializer);
+    sse_encode_opt_String(self.dylibPath, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.interThreads, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.intraThreads, serializer);
+    sse_encode_opt_box_autoadd_bool(self.spinControl, serializer);
+    sse_encode_opt_String(self.intraAffinity, serializer);
+    sse_encode_opt_box_autoadd_bool(self.telemetry, serializer);
+  }
+
+  @protected
+  void sse_encode_ort_init_options(
+    OrtInitOptions self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_box_autoadd_ort_environment_options(
+      self.environment,
+      serializer,
+    );
+    sse_encode_opt_box_autoadd_ort_session_options(self.session, serializer);
+  }
+
+  @protected
+  void sse_encode_ort_session_options(
+    OrtSessionOptions self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_box_autoadd_i_64(self.intraThreads, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.interThreads, serializer);
+    sse_encode_opt_box_autoadd_bool(self.parallelExecution, serializer);
+    sse_encode_opt_box_autoadd_i_64(self.optimizationLevel, serializer);
+  }
+
+  @protected
   void sse_encode_token_offsets(TokenOffsets self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self.start, serializer);
@@ -2312,6 +3675,29 @@ class Array2F32Impl extends RustOpaque implements Array2F32 {
 }
 
 @sealed
+class BgeEmbedderImpl extends RustOpaque implements BgeEmbedder {
+  // Not to be used by end users
+  BgeEmbedderImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  BgeEmbedderImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_BgeEmbedder,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_BgeEmbedder,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_BgeEmbedderPtr,
+  );
+
+  List<Float32List> embed({required List<String> texts}) => RustLib.instance.api
+      .crateApiEmbeddingsBgeBgeEmbedderEmbed(that: this, texts: texts);
+}
+
+@sealed
 class GemmaEmbedderImpl extends RustOpaque implements GemmaEmbedder {
   // Not to be used by end users
   GemmaEmbedderImpl.frbInternalDcoDecode(List<dynamic> wire)
@@ -2364,6 +3750,29 @@ class JinaV3EmbedderImpl extends RustOpaque implements JinaV3Embedder {
 }
 
 @sealed
+class MiniLmEmbedderImpl extends RustOpaque implements MiniLmEmbedder {
+  // Not to be used by end users
+  MiniLmEmbedderImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  MiniLmEmbedderImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_MiniLmEmbedder,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_MiniLmEmbedder,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_MiniLmEmbedderPtr,
+  );
+
+  List<Float32List> embed({required List<String> texts}) => RustLib.instance.api
+      .crateApiEmbeddingsMinilmMiniLmEmbedderEmbed(that: this, texts: texts);
+}
+
+@sealed
 class Qwen3EmbedderImpl extends RustOpaque implements Qwen3Embedder {
   // Not to be used by end users
   Qwen3EmbedderImpl.frbInternalDcoDecode(List<dynamic> wire)
@@ -2384,4 +3793,24 @@ class Qwen3EmbedderImpl extends RustOpaque implements Qwen3Embedder {
 
   List<Float32List> embed({required List<String> texts}) => RustLib.instance.api
       .crateApiEmbeddingsQwen3Qwen3EmbedderEmbed(that: this, texts: texts);
+}
+
+@sealed
+class SessionImpl extends RustOpaque implements Session {
+  // Not to be used by end users
+  SessionImpl.frbInternalDcoDecode(List<dynamic> wire)
+    : super.frbInternalDcoDecode(wire, _kStaticData);
+
+  // Not to be used by end users
+  SessionImpl.frbInternalSseDecode(BigInt ptr, int externalSizeOnNative)
+    : super.frbInternalSseDecode(ptr, externalSizeOnNative, _kStaticData);
+
+  static final _kStaticData = RustArcStaticData(
+    rustArcIncrementStrongCount:
+        RustLib.instance.api.rust_arc_increment_strong_count_Session,
+    rustArcDecrementStrongCount:
+        RustLib.instance.api.rust_arc_decrement_strong_count_Session,
+    rustArcDecrementStrongCountPtr:
+        RustLib.instance.api.rust_arc_decrement_strong_count_SessionPtr,
+  );
 }

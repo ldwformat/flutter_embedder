@@ -7,32 +7,33 @@ import '../../frb_generated.dart';
 import '../ort.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<GemmaEmbedder>>
-abstract class GemmaEmbedder implements RustOpaqueInterface {
-  static GemmaEmbedder create({
+// These functions are ignored because they are not marked as `pub`: `pick_embedding_tensor`
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<BgeEmbedder>>
+abstract class BgeEmbedder implements RustOpaqueInterface {
+  static BgeEmbedder create({
     required String modelPath,
     required String tokenizerPath,
-  }) => RustLib.instance.api.crateApiEmbeddingsGemmaGemmaEmbedderCreate(
+  }) => RustLib.instance.api.crateApiEmbeddingsBgeBgeEmbedderCreate(
     modelPath: modelPath,
     tokenizerPath: tokenizerPath,
   );
 
-  static GemmaEmbedder createWithOptions({
+  static BgeEmbedder createWithOptions({
     required String modelPath,
     required String tokenizerPath,
     OrtInitOptions? ortOptions,
-  }) => RustLib.instance.api
-      .crateApiEmbeddingsGemmaGemmaEmbedderCreateWithOptions(
-        modelPath: modelPath,
-        tokenizerPath: tokenizerPath,
-        ortOptions: ortOptions,
-      );
+  }) => RustLib.instance.api.crateApiEmbeddingsBgeBgeEmbedderCreateWithOptions(
+    modelPath: modelPath,
+    tokenizerPath: tokenizerPath,
+    ortOptions: ortOptions,
+  );
 
   List<Float32List> embed({required List<String> texts});
 
   static String formatDocument({required String text}) => RustLib.instance.api
-      .crateApiEmbeddingsGemmaGemmaEmbedderFormatDocument(text: text);
+      .crateApiEmbeddingsBgeBgeEmbedderFormatDocument(text: text);
 
   static String formatQuery({required String query}) => RustLib.instance.api
-      .crateApiEmbeddingsGemmaGemmaEmbedderFormatQuery(query: query);
+      .crateApiEmbeddingsBgeBgeEmbedderFormatQuery(query: query);
 }

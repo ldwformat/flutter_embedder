@@ -7,24 +7,24 @@ import '../../frb_generated.dart';
 import '../ort.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `fit_mask`, `pick_embedding_tensor`, `repeat_i64`, `resolve_past_kv_shape`, `resolve_shape_with_fallback`, `tensor_from_i64`, `zeros_tensor`
+// These functions are ignored because they are not marked as `pub`: `fit_mask`, `pick_embedding_tensor`
 
-// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Qwen3Embedder>>
-abstract class Qwen3Embedder implements RustOpaqueInterface {
-  static Qwen3Embedder create({
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<MiniLmEmbedder>>
+abstract class MiniLmEmbedder implements RustOpaqueInterface {
+  static MiniLmEmbedder create({
     required String modelPath,
     required String tokenizerPath,
-  }) => RustLib.instance.api.crateApiEmbeddingsQwen3Qwen3EmbedderCreate(
+  }) => RustLib.instance.api.crateApiEmbeddingsMinilmMiniLmEmbedderCreate(
     modelPath: modelPath,
     tokenizerPath: tokenizerPath,
   );
 
-  static Qwen3Embedder createWithOptions({
+  static MiniLmEmbedder createWithOptions({
     required String modelPath,
     required String tokenizerPath,
     OrtInitOptions? ortOptions,
   }) => RustLib.instance.api
-      .crateApiEmbeddingsQwen3Qwen3EmbedderCreateWithOptions(
+      .crateApiEmbeddingsMinilmMiniLmEmbedderCreateWithOptions(
         modelPath: modelPath,
         tokenizerPath: tokenizerPath,
         ortOptions: ortOptions,
@@ -33,8 +33,8 @@ abstract class Qwen3Embedder implements RustOpaqueInterface {
   List<Float32List> embed({required List<String> texts});
 
   static String formatDocument({required String text}) => RustLib.instance.api
-      .crateApiEmbeddingsQwen3Qwen3EmbedderFormatDocument(text: text);
+      .crateApiEmbeddingsMinilmMiniLmEmbedderFormatDocument(text: text);
 
   static String formatQuery({required String query}) => RustLib.instance.api
-      .crateApiEmbeddingsQwen3Qwen3EmbedderFormatQuery(query: query);
+      .crateApiEmbeddingsMinilmMiniLmEmbedderFormatQuery(query: query);
 }
