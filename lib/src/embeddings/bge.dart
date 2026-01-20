@@ -15,6 +15,8 @@ class BgeEmbedderFactory {
     String revision = 'main',
     String? onnxFile,
     String? tokenizerFile,
+    bool includeExternalData = true,
+    DownloadProgress? onProgress,
     bool force = false,
     String? hfToken,
   }) async {
@@ -25,6 +27,8 @@ class BgeEmbedderFactory {
       revision: revision,
       onnxFile: onnxFile,
       tokenizerFile: tokenizerFile,
+      includeExternalData: includeExternalData,
+      onProgress: onProgress,
       force: force,
     );
     return frb.BgeEmbedder.create(

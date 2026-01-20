@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
@@ -22,6 +20,8 @@ class EmbeddingModelFiles {
   final String? revision;
   final Map<String, String> extraFiles;
 }
+
+typedef DownloadProgress = void Function(String file, int received, int total);
 
 class ModelManager {
   ModelManager({
@@ -131,6 +131,8 @@ class ModelManager {
     String revision = "main",
     String? onnxFile,
     String? tokenizerFile,
+    bool includeExternalData = true,
+    DownloadProgress? onProgress,
     bool force = false,
   }) async {
     final modelDir = await _ensureModelDir(modelId);
@@ -143,16 +145,37 @@ class ModelManager {
 
     final modelFile = File(_join(modelDir.path, onnxName));
     final tokenizerJson = File(_join(modelDir.path, tokenizerName));
+    final extraFiles = <String, String>{};
+
+    String? onnxDataName;
+    if (includeExternalData) {
+      onnxDataName = _resolveOnnxDataFile(onnxName, files);
+      if (onnxDataName != null) {
+        extraFiles["onnx_data"] = onnxDataName;
+      }
+    }
+
     await _downloadFile(
       _hfResolveUrl(modelId, revision, onnxName),
       modelFile,
+      onProgress,
       force,
     );
     await _downloadFile(
       _hfResolveUrl(modelId, revision, tokenizerName),
       tokenizerJson,
+      onProgress,
       force,
     );
+    if (onnxDataName != null) {
+      final dataFile = File(_join(modelDir.path, onnxDataName));
+      await _downloadFile(
+        _hfResolveUrl(modelId, revision, onnxDataName),
+        dataFile,
+        onProgress,
+        force,
+      );
+    }
 
     final manifest = _ModelManifest(
       modelId: modelId,
@@ -160,6 +183,7 @@ class ModelManager {
       modelFile: onnxName,
       tokenizerFile: tokenizerName,
       revision: revision,
+      extraFiles: extraFiles,
     );
     await _writeManifest(modelDir, manifest);
 
@@ -169,6 +193,7 @@ class ModelManager {
       tokenizerPath: tokenizerJson.path,
       source: manifest.source,
       revision: revision,
+      extraFiles: extraFiles,
     );
   }
 
@@ -197,7 +222,12 @@ class ModelManager {
     await dest.writeAsBytes(bytes, flush: true);
   }
 
-  Future<void> _downloadFile(Uri url, File dest, bool overwrite) async {
+  Future<void> _downloadFile(
+    Uri url,
+    File dest,
+    DownloadProgress? onProgress,
+    bool overwrite,
+  ) async {
     if (dest.existsSync() && !overwrite) {
       return;
     }
@@ -213,11 +243,18 @@ class ModelManager {
         uri: url,
       );
     }
-    final bytes = await response.fold<BytesBuilder>(
-      BytesBuilder(),
-      (builder, chunk) => builder..add(chunk),
-    );
-    await dest.writeAsBytes(bytes.takeBytes(), flush: true);
+    final total = response.contentLength;
+    var received = 0;
+    final sink = dest.openWrite();
+    await for (final chunk in response) {
+      received += chunk.length;
+      sink.add(chunk);
+      if (onProgress != null) {
+        onProgress(dest.path, received, total);
+      }
+    }
+    await sink.flush();
+    await sink.close();
   }
 
   Future<List<String>> _fetchHfFiles(String modelId) async {
@@ -280,6 +317,17 @@ class ModelManager {
     }
     candidates.sort((a, b) => _rankOnnx(a).compareTo(_rankOnnx(b)));
     return candidates.first;
+  }
+
+  String? _resolveOnnxDataFile(String onnxName, List<String> files) {
+    if (!onnxName.endsWith('.onnx')) {
+      return null;
+    }
+    final candidate = "${onnxName}_data";
+    if (files.contains(candidate)) {
+      return candidate;
+    }
+    return null;
   }
 
   int _rankOnnx(String name) {

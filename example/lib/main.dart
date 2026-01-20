@@ -34,6 +34,7 @@ class _MyAppState extends State<MyApp> {
   BgeEmbedder? _bgeEmbedder;
   ModelManager? _modelManager;
   final TextEditingController _hfModelController = TextEditingController();
+  final Map<String, int> _downloadProgress = {};
   String? _qwenModelPath;
   String? _qwenTokenizerPath;
   String? _gemmaModelPath;
@@ -136,7 +137,21 @@ class _MyAppState extends State<MyApp> {
     }
     setState(() => _loading = true);
     try {
-      final files = await manager.fromHuggingFace(modelId: modelId);
+      _downloadProgress.clear();
+      final files = await manager.fromHuggingFace(
+        modelId: modelId,
+        onProgress: (file, received, total) {
+          if (total <= 0) {
+            return;
+          }
+          final pct = ((received / total) * 100).floor();
+          final last = _downloadProgress[file] ?? -1;
+          if (pct >= 100 || pct - last >= 10) {
+            _downloadProgress[file] = pct;
+            _appendLog('Downloading $file: $pct%');
+          }
+        },
+      );
       _appendLog('Downloaded model: ${files.modelId}');
       _appendLog('ONNX: ${files.modelPath}');
       _appendLog('Tokenizer: ${files.tokenizerPath}');

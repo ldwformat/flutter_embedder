@@ -1,3 +1,9 @@
+## 0.1.5
+
+* Added Hugging Face download progress callbacks and auto-fetch for `.onnx_data`.
+* Updated embedder factories to pass through download options.
+* Example app logs download progress.
+
 ## 0.1.3
 
 * Added Dart-side ModelManager helpers, cache defaults, and embedder factories.

@@ -38,7 +38,7 @@ final doc = <Model>Embedder.formatDocument(text: '...');
 Add to `pubspec.yaml`:
 ```yaml
 dependencies:
-  flutter_embedder: ^0.1.2
+  flutter_embedder: ^0.1.5
 ```
 
 ## Usage
@@ -112,6 +112,12 @@ final manager = await ModelManager.withDefaultCacheDir();
 // Download from Hugging Face by modelId.
 final files = await manager.fromHuggingFace(
   modelId: 'onnx-community/bge-small-en-v1.5-ONNX',
+  onProgress: (file, received, total) {
+    if (total > 0) {
+      final pct = (received / total * 100).toStringAsFixed(1);
+      debugPrint('Downloading $file: $pct%');
+    }
+  },
 );
 final bge = BgeEmbedder.create(
   modelPath: files.modelPath,
@@ -132,6 +138,9 @@ final minilm = MiniLmEmbedder.create(
 
 By default, `withDefaultCacheDir()` uses `getApplicationSupportDirectory()`.
 Only use external storage if you want users to manage/cache files manually.
+If the model uses external weights (e.g. `model.onnx_data`), the downloader
+will fetch them automatically. You can disable this via
+`includeExternalData: false`.
 
 Convenience factories are also available for built-in models:
 ```dart
