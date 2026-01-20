@@ -38,7 +38,7 @@ final doc = <Model>Embedder.formatDocument(text: '...');
 Add to `pubspec.yaml`:
 ```yaml
 dependencies:
-  flutter_embedder: ^0.1.6
+  flutter_embedder: ^0.1.7
 ```
 
 ## Usage
@@ -119,6 +119,7 @@ final files = await manager.fromHuggingFace(
     }
   },
   maxConnections: 4,
+  resume: true,
 );
 final bge = BgeEmbedder.create(
   modelPath: files.modelPath,
@@ -144,6 +145,10 @@ will fetch them automatically. You can disable this via
 `includeExternalData: false`.
 Parallel downloads use HTTP range requests when supported; otherwise they
 fallback to a single connection.
+If a download is interrupted, `resume: true` will attempt to continue it when
+the server supports range requests. You can also clean up partial files via
+`ModelManager.cleanPartialDownloads(modelId)` or clear the cache entirely via
+`ModelManager.clearCache()`.
 
 Convenience factories are also available for built-in models:
 ```dart

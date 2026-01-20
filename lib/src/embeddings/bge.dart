@@ -6,8 +6,7 @@ export 'package:flutter_embedder/src/rust/api/embeddings/bge.dart'
     show BgeEmbedder;
 
 class BgeEmbedderFactory {
-  static const String defaultModelId =
-      'onnx-community/bge-small-en-v1.5-ONNX';
+  static const String defaultModelId = 'onnx-community/bge-small-en-v1.5-ONNX';
 
   static Future<frb.BgeEmbedder> fromHuggingFace({
     ModelManager? manager,
@@ -18,6 +17,7 @@ class BgeEmbedderFactory {
     bool includeExternalData = true,
     DownloadProgress? onProgress,
     int maxConnections = 1,
+    bool resume = true,
     bool force = false,
     String? hfToken,
   }) async {
@@ -31,6 +31,7 @@ class BgeEmbedderFactory {
       includeExternalData: includeExternalData,
       onProgress: onProgress,
       maxConnections: maxConnections,
+      resume: resume,
       force: force,
     );
     return frb.BgeEmbedder.create(

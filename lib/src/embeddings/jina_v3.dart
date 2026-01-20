@@ -17,6 +17,7 @@ class JinaV3EmbedderFactory {
     bool includeExternalData = true,
     DownloadProgress? onProgress,
     int maxConnections = 1,
+    bool resume = true,
     bool force = false,
     String? hfToken,
   }) async {
@@ -30,6 +31,7 @@ class JinaV3EmbedderFactory {
       includeExternalData: includeExternalData,
       onProgress: onProgress,
       maxConnections: maxConnections,
+      resume: resume,
       force: force,
     );
     return frb.JinaV3Embedder.create(

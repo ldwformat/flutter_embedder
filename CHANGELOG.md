@@ -1,3 +1,7 @@
+## 0.1.7
+
+* Added cache cleanup helpers (`clearCache`, `cleanPartialDownloads`).
+
 ## 0.1.6
 
 * Added optional parallel downloads using HTTP range requests.

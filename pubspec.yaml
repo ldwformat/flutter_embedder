@@ -1,6 +1,6 @@
 name: flutter_embedder
 description: "Flutter FFI plugin for Hugging Face tokenizers and ONNX embedding models using ONNX Runtime."
-version: 0.1.6
+version: 0.1.7
 homepage: https://github.com/ldwformat/flutter_embedder
 repository: https://github.com/ldwformat/flutter_embedder
 

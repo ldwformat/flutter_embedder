@@ -99,6 +99,26 @@ class ModelManager {
     }
   }
 
+  Future<void> clearCache() async {
+    if (!cacheDir.existsSync()) {
+      return;
+    }
+    await cacheDir.delete(recursive: true);
+    await cacheDir.create(recursive: true);
+  }
+
+  Future<void> cleanPartialDownloads(String modelId) async {
+    final dir = Directory(_join(cacheDir.path, _safeModelDirName(modelId)));
+    if (!dir.existsSync()) {
+      return;
+    }
+    for (final entry in dir.listSync().whereType<File>()) {
+      if (entry.path.contains(".part")) {
+        await entry.delete();
+      }
+    }
+  }
+
   Future<EmbeddingModelFiles> fromAssets({
     required String modelId,
     required String modelAssetPath,
@@ -142,6 +162,7 @@ class ModelManager {
     bool includeExternalData = true,
     DownloadProgress? onProgress,
     int maxConnections = 1,
+    bool resume = true,
     bool force = false,
   }) async {
     final modelDir = await _ensureModelDir(modelId);
@@ -169,6 +190,7 @@ class ModelManager {
       modelFile,
       onProgress,
       maxConnections,
+      resume,
       force,
     );
     await _downloadFile(
@@ -176,6 +198,7 @@ class ModelManager {
       tokenizerJson,
       onProgress,
       maxConnections,
+      resume,
       force,
     );
     if (onnxDataName != null) {
@@ -185,6 +208,7 @@ class ModelManager {
         dataFile,
         onProgress,
         maxConnections,
+        resume,
         force,
       );
     }
@@ -244,23 +268,40 @@ class ModelManager {
     File dest,
     DownloadProgress? onProgress,
     int maxConnections,
+    bool resume,
     bool overwrite,
   ) async {
-    if (dest.existsSync() && !overwrite) {
-      return;
-    }
     await dest.parent.create(recursive: true);
-    if (maxConnections > 1) {
-      final info = await _probeRemoteFile(url);
+    final info = await _probeRemoteFile(url);
+
+    if (dest.existsSync() && !overwrite) {
+      if (!resume) {
+        return;
+      }
+      if (info != null && info.supportsRanges && info.length > 0) {
+        await _downloadFileSingle(
+          url,
+          dest,
+          onProgress,
+          resume: true,
+          info: info,
+        );
+        return;
+      }
+      await dest.delete();
+    }
+
+    if (maxConnections > 1 && info != null) {
       final ranges = _planRanges(info, maxConnections);
       if (ranges.length > 1) {
         try {
           await _downloadFileParallel(
             url,
             dest,
-            info!.length,
+            info.length,
             ranges,
             onProgress,
+            resume,
           );
           return;
         } catch (_) {
@@ -274,8 +315,30 @@ class ModelManager {
   Future<void> _downloadFileSingle(
     Uri url,
     File dest,
-    DownloadProgress? onProgress,
-  ) async {
+    DownloadProgress? onProgress, {
+    bool resume = false,
+    _RemoteFileInfo? info,
+  }) async {
+    if (resume && dest.existsSync()) {
+      final existing = dest.lengthSync();
+      if (info != null && info.supportsRanges && info.length > existing) {
+        await _downloadRange(
+          url,
+          dest,
+          (start: existing, end: info.length - 1),
+          (received) {
+            if (onProgress != null) {
+              onProgress(dest.path, existing + received, info.length);
+            }
+          },
+          append: true,
+        );
+        return;
+      }
+      if (info != null && info.length == existing) {
+        return;
+      }
+    }
     final request = await _client.getUrl(url);
     if (hfToken != null && hfToken!.isNotEmpty) {
       request.headers.set("Authorization", "Bearer $hfToken");
@@ -353,20 +416,36 @@ class ModelManager {
     int total,
     List<_Range> ranges,
     DownloadProgress? onProgress,
+    bool resume,
   ) async {
     final partReceived = List<int>.filled(ranges.length, 0);
     final futures = <Future<void>>[];
     for (var i = 0; i < ranges.length; i++) {
       final range = ranges[i];
       final partFile = File("${dest.path}.part$i");
+      final expected = range.end - range.start + 1;
+      var existing = 0;
+      if (resume && partFile.existsSync()) {
+        existing = partFile.lengthSync();
+        if (existing > expected) {
+          await partFile.delete();
+          existing = 0;
+        }
+      }
+      partReceived[i] = existing;
+      if (resume && existing >= expected) {
+        continue;
+      }
+      final start = range.start + existing;
+      final resumeRange = (start: start, end: range.end);
       futures.add(
-        _downloadRange(url, partFile, range, (received) {
-          partReceived[i] = received;
+        _downloadRange(url, partFile, resumeRange, (received) {
+          partReceived[i] = existing + received;
           if (onProgress != null) {
             final sum = partReceived.fold<int>(0, (a, b) => a + b);
             onProgress(dest.path, sum, total);
           }
-        }),
+        }, append: existing > 0),
       );
     }
     await Future.wait(futures);
@@ -385,8 +464,9 @@ class ModelManager {
     Uri url,
     File dest,
     _Range range,
-    void Function(int received) onReceived,
-  ) async {
+    void Function(int received) onReceived, {
+    bool append = false,
+  }) async {
     final request = await _client.getUrl(url);
     if (hfToken != null && hfToken!.isNotEmpty) {
       request.headers.set("Authorization", "Bearer $hfToken");
@@ -400,7 +480,9 @@ class ModelManager {
       );
     }
     var received = 0;
-    final sink = dest.openWrite();
+    final sink = dest.openWrite(
+      mode: append ? FileMode.append : FileMode.write,
+    );
     await for (final chunk in response) {
       received += chunk.length;
       sink.add(chunk);

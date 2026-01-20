@@ -18,6 +18,7 @@ class GemmaEmbedderFactory {
     bool includeExternalData = true,
     DownloadProgress? onProgress,
     int maxConnections = 1,
+    bool resume = true,
     bool force = false,
     String? hfToken,
   }) async {
@@ -31,6 +32,7 @@ class GemmaEmbedderFactory {
       includeExternalData: includeExternalData,
       onProgress: onProgress,
       maxConnections: maxConnections,
+      resume: resume,
       force: force,
     );
     return frb.GemmaEmbedder.create(
