@@ -22,21 +22,27 @@ class EmbeddingModelFiles {
 }
 
 typedef DownloadProgress = void Function(String file, int received, int total);
+typedef _Range = ({int start, int end});
+
+class _RemoteFileInfo {
+  const _RemoteFileInfo({required this.length, required this.supportsRanges});
+
+  final int length;
+  final bool supportsRanges;
+}
 
 class ModelManager {
-  ModelManager({
-    required this.cacheDir,
-    HttpClient? httpClient,
-    this.hfToken,
-  }) : _client = httpClient ?? HttpClient();
+  ModelManager({required this.cacheDir, HttpClient? httpClient, this.hfToken})
+    : _client = httpClient ?? HttpClient();
 
   static Future<ModelManager> withDefaultCacheDir({
     String subdir = "flutter_embedder",
     bool temporary = false,
     String? hfToken,
   }) async {
-    final baseDir =
-        temporary ? await getTemporaryDirectory() : await getApplicationSupportDirectory();
+    final baseDir = temporary
+        ? await getTemporaryDirectory()
+        : await getApplicationSupportDirectory();
     final path = subdir.isEmpty
         ? baseDir.path
         : "${baseDir.path}${Platform.pathSeparator}$subdir";
@@ -49,7 +55,9 @@ class ModelManager {
   final String? hfToken;
 
   Future<EmbeddingModelFiles?> getLocalModel(String modelId) async {
-    final modelDir = Directory(_join(cacheDir.path, _safeModelDirName(modelId)));
+    final modelDir = Directory(
+      _join(cacheDir.path, _safeModelDirName(modelId)),
+    );
     final manifest = await _readManifest(modelDir);
     if (manifest == null) {
       return null;
@@ -133,6 +141,7 @@ class ModelManager {
     String? tokenizerFile,
     bool includeExternalData = true,
     DownloadProgress? onProgress,
+    int maxConnections = 1,
     bool force = false,
   }) async {
     final modelDir = await _ensureModelDir(modelId);
@@ -159,12 +168,14 @@ class ModelManager {
       _hfResolveUrl(modelId, revision, onnxName),
       modelFile,
       onProgress,
+      maxConnections,
       force,
     );
     await _downloadFile(
       _hfResolveUrl(modelId, revision, tokenizerName),
       tokenizerJson,
       onProgress,
+      maxConnections,
       force,
     );
     if (onnxDataName != null) {
@@ -173,6 +184,7 @@ class ModelManager {
         _hfResolveUrl(modelId, revision, onnxDataName),
         dataFile,
         onProgress,
+        maxConnections,
         force,
       );
     }
@@ -201,7 +213,9 @@ class ModelManager {
     if (!cacheDir.existsSync()) {
       await cacheDir.create(recursive: true);
     }
-    final modelDir = Directory(_join(cacheDir.path, _safeModelDirName(modelId)));
+    final modelDir = Directory(
+      _join(cacheDir.path, _safeModelDirName(modelId)),
+    );
     if (!modelDir.existsSync()) {
       await modelDir.create(recursive: true);
     }
@@ -218,7 +232,10 @@ class ModelManager {
     }
     await dest.parent.create(recursive: true);
     final data = await rootBundle.load(assetPath);
-    final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    final bytes = data.buffer.asUint8List(
+      data.offsetInBytes,
+      data.lengthInBytes,
+    );
     await dest.writeAsBytes(bytes, flush: true);
   }
 
@@ -226,12 +243,39 @@ class ModelManager {
     Uri url,
     File dest,
     DownloadProgress? onProgress,
+    int maxConnections,
     bool overwrite,
   ) async {
     if (dest.existsSync() && !overwrite) {
       return;
     }
     await dest.parent.create(recursive: true);
+    if (maxConnections > 1) {
+      final info = await _probeRemoteFile(url);
+      final ranges = _planRanges(info, maxConnections);
+      if (ranges.length > 1) {
+        try {
+          await _downloadFileParallel(
+            url,
+            dest,
+            info!.length,
+            ranges,
+            onProgress,
+          );
+          return;
+        } catch (_) {
+          await _cleanupParts(dest, ranges.length);
+        }
+      }
+    }
+    await _downloadFileSingle(url, dest, onProgress);
+  }
+
+  Future<void> _downloadFileSingle(
+    Uri url,
+    File dest,
+    DownloadProgress? onProgress,
+  ) async {
     final request = await _client.getUrl(url);
     if (hfToken != null && hfToken!.isNotEmpty) {
       request.headers.set("Authorization", "Bearer $hfToken");
@@ -255,6 +299,124 @@ class ModelManager {
     }
     await sink.flush();
     await sink.close();
+  }
+
+  Future<_RemoteFileInfo?> _probeRemoteFile(Uri url) async {
+    final request = await _client.openUrl("HEAD", url);
+    if (hfToken != null && hfToken!.isNotEmpty) {
+      request.headers.set("Authorization", "Bearer $hfToken");
+    }
+    final response = await request.close();
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      return null;
+    }
+    final length = response.contentLength;
+    if (length <= 0) {
+      return null;
+    }
+    final acceptRanges = response.headers.value("accept-ranges");
+    final supportsRanges =
+        acceptRanges != null && acceptRanges.contains("bytes");
+    return _RemoteFileInfo(length: length, supportsRanges: supportsRanges);
+  }
+
+  List<_Range> _planRanges(_RemoteFileInfo? info, int maxConnections) {
+    const minPartSize = 4 * 1024 * 1024;
+    if (info == null || !info.supportsRanges || maxConnections <= 1) {
+      return const [];
+    }
+    final length = info.length;
+    final parts = (length / minPartSize).ceil();
+    final partCount = parts.clamp(1, maxConnections);
+    if (partCount <= 1) {
+      return const [];
+    }
+    final chunkSize = (length / partCount).ceil();
+    final ranges = <_Range>[];
+    for (var i = 0; i < partCount; i++) {
+      final start = i * chunkSize;
+      var end = (i + 1) * chunkSize - 1;
+      if (end >= length) {
+        end = length - 1;
+      }
+      if (start > end) {
+        break;
+      }
+      ranges.add((start: start, end: end));
+    }
+    return ranges;
+  }
+
+  Future<void> _downloadFileParallel(
+    Uri url,
+    File dest,
+    int total,
+    List<_Range> ranges,
+    DownloadProgress? onProgress,
+  ) async {
+    final partReceived = List<int>.filled(ranges.length, 0);
+    final futures = <Future<void>>[];
+    for (var i = 0; i < ranges.length; i++) {
+      final range = ranges[i];
+      final partFile = File("${dest.path}.part$i");
+      futures.add(
+        _downloadRange(url, partFile, range, (received) {
+          partReceived[i] = received;
+          if (onProgress != null) {
+            final sum = partReceived.fold<int>(0, (a, b) => a + b);
+            onProgress(dest.path, sum, total);
+          }
+        }),
+      );
+    }
+    await Future.wait(futures);
+
+    final sink = dest.openWrite();
+    for (var i = 0; i < ranges.length; i++) {
+      final partFile = File("${dest.path}.part$i");
+      await sink.addStream(partFile.openRead());
+      await partFile.delete();
+    }
+    await sink.flush();
+    await sink.close();
+  }
+
+  Future<void> _downloadRange(
+    Uri url,
+    File dest,
+    _Range range,
+    void Function(int received) onReceived,
+  ) async {
+    final request = await _client.getUrl(url);
+    if (hfToken != null && hfToken!.isNotEmpty) {
+      request.headers.set("Authorization", "Bearer $hfToken");
+    }
+    request.headers.set("Range", "bytes=${range.start}-${range.end}");
+    final response = await request.close();
+    if (response.statusCode != 206) {
+      throw HttpException(
+        "Range request failed for $url (${response.statusCode})",
+        uri: url,
+      );
+    }
+    var received = 0;
+    final sink = dest.openWrite();
+    await for (final chunk in response) {
+      received += chunk.length;
+      sink.add(chunk);
+      onReceived(received);
+    }
+    await sink.flush();
+    await sink.close();
+  }
+
+  Future<void> _cleanupParts(File dest, int count) async {
+    for (var i = 0; i < count; i++) {
+      final partFile = File("${dest.path}.part$i");
+      if (partFile.existsSync()) {
+        await partFile.delete();
+      }
+    }
   }
 
   Future<List<String>> _fetchHfFiles(String modelId) async {
@@ -335,7 +497,9 @@ class ModelManager {
     if (name.contains("onnx/")) score -= 3;
     if (name.contains("model")) score -= 2;
     if (name.contains("fp16")) score += 2;
-    if (name.contains("q4") || name.contains("int8") || name.contains("quant")) {
+    if (name.contains("q4") ||
+        name.contains("int8") ||
+        name.contains("quant")) {
       score += 5;
     }
     return score;
@@ -375,7 +539,10 @@ class ModelManager {
     return _ModelManifest.fromJson(data);
   }
 
-  Future<void> _writeManifest(Directory modelDir, _ModelManifest manifest) async {
+  Future<void> _writeManifest(
+    Directory modelDir,
+    _ModelManifest manifest,
+  ) async {
     final file = File(_join(modelDir.path, _ModelManifest.fileName));
     await file.writeAsString(jsonEncode(manifest.toJson()), flush: true);
   }
@@ -407,18 +574,20 @@ class _ModelManifest {
       modelFile: json["modelFile"] as String? ?? "",
       tokenizerFile: json["tokenizerFile"] as String? ?? "",
       revision: json["revision"] as String?,
-      extraFiles: (json["extraFiles"] as Map?)
-              ?.map((key, value) => MapEntry("$key", "$value")) ??
+      extraFiles:
+          (json["extraFiles"] as Map?)?.map(
+            (key, value) => MapEntry("$key", "$value"),
+          ) ??
           const {},
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "modelId": modelId,
-        "source": source,
-        "modelFile": modelFile,
-        "tokenizerFile": tokenizerFile,
-        "revision": revision,
-        "extraFiles": extraFiles,
-      };
+    "modelId": modelId,
+    "source": source,
+    "modelFile": modelFile,
+    "tokenizerFile": tokenizerFile,
+    "revision": revision,
+    "extraFiles": extraFiles,
+  };
 }

@@ -17,6 +17,7 @@ class Qwen3EmbedderFactory {
     String? tokenizerFile,
     bool includeExternalData = true,
     DownloadProgress? onProgress,
+    int maxConnections = 1,
     bool force = false,
     String? hfToken,
   }) async {
@@ -29,6 +30,7 @@ class Qwen3EmbedderFactory {
       tokenizerFile: tokenizerFile,
       includeExternalData: includeExternalData,
       onProgress: onProgress,
+      maxConnections: maxConnections,
       force: force,
     );
     return frb.Qwen3Embedder.create(

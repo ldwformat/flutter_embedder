@@ -1,3 +1,8 @@
+## 0.1.6
+
+* Added optional parallel downloads using HTTP range requests.
+* Exposed `maxConnections` on embedder factories and ModelManager.
+
 ## 0.1.5
 
 * Added Hugging Face download progress callbacks and auto-fetch for `.onnx_data`.

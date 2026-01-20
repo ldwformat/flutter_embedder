@@ -259,8 +259,9 @@ class _MyAppState extends State<MyApp> {
         'The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.',
         'I love pandas so much!',
       ];
-      final docInputs =
-          docs.map((text) => BgeEmbedder.formatDocument(text: text)).toList();
+      final docInputs = docs
+          .map((text) => BgeEmbedder.formatDocument(text: text))
+          .toList();
       final docEmbeddings = embedder.embed(texts: docInputs);
       final query = BgeEmbedder.formatQuery(query: 'What is a panda?');
       final queryEmbedding = embedder.embed(texts: [query]).first;

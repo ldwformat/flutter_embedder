@@ -38,7 +38,7 @@ final doc = <Model>Embedder.formatDocument(text: '...');
 Add to `pubspec.yaml`:
 ```yaml
 dependencies:
-  flutter_embedder: ^0.1.5
+  flutter_embedder: ^0.1.6
 ```
 
 ## Usage
@@ -118,6 +118,7 @@ final files = await manager.fromHuggingFace(
       debugPrint('Downloading $file: $pct%');
     }
   },
+  maxConnections: 4,
 );
 final bge = BgeEmbedder.create(
   modelPath: files.modelPath,
@@ -141,6 +142,8 @@ Only use external storage if you want users to manage/cache files manually.
 If the model uses external weights (e.g. `model.onnx_data`), the downloader
 will fetch them automatically. You can disable this via
 `includeExternalData: false`.
+Parallel downloads use HTTP range requests when supported; otherwise they
+fallback to a single connection.
 
 Convenience factories are also available for built-in models:
 ```dart

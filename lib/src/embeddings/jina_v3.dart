@@ -16,6 +16,7 @@ class JinaV3EmbedderFactory {
     String? tokenizerFile,
     bool includeExternalData = true,
     DownloadProgress? onProgress,
+    int maxConnections = 1,
     bool force = false,
     String? hfToken,
   }) async {
@@ -28,6 +29,7 @@ class JinaV3EmbedderFactory {
       tokenizerFile: tokenizerFile,
       includeExternalData: includeExternalData,
       onProgress: onProgress,
+      maxConnections: maxConnections,
       force: force,
     );
     return frb.JinaV3Embedder.create(
