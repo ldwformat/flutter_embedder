@@ -3490,5 +3490,6 @@ mod web {
         MoiArc::<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<Session>>::decrement_strong_count(ptr as _);
     }
 }
+use ort::session::Session;
 #[cfg(target_family = "wasm")]
 pub use web::*;
