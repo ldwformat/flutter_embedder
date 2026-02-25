@@ -14,7 +14,7 @@ apply_cargokit(${PROJECT_NAME} ../rust flutter_embedder "")
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
-set(flutter_embedding_bundled_libraries
+set(flutter_embedder_bundled_libraries
   "${${PROJECT_NAME}_cargokit_lib}"
   PARENT_SCOPE
 )
